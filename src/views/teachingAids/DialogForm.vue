@@ -376,7 +376,11 @@ function headPDupload(data: any) {
 </script>
 
 <template>
-  <el-dialog v-model="dialogVisible" title="新增手抄报" width="500">
+  <el-dialog
+    v-model="dialogVisible"
+    :title="`${props.data?.id ? '新增' : '编辑'}辅材资料`"
+    width="500"
+  >
     <el-form
       ref="ruleFormRef"
       label-position="top"

@@ -39,7 +39,7 @@ watch(
   () => {
     ruleForm.value = {
       ...props.data,
-      img: props.data.img.map(item => {
+      img: props.data.img?.map(item => {
         return {
           url: item,
           status: "success"
@@ -373,7 +373,11 @@ function handSubmit() {
 </script>
 
 <template>
-  <el-dialog v-model="dialogVisible" title="新增手抄报" width="500">
+  <el-dialog
+    v-model="dialogVisible"
+    :title="`${props.data?.id ? '新增' : '编辑'}手抄报`"
+    width="500"
+  >
     <el-form
       ref="ruleFormRef"
       label-position="top"
