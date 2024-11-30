@@ -3,8 +3,16 @@ import { ref, unref } from "vue";
 import { uesTabTable } from "./uesTabTable";
 import { Search } from "@element-plus/icons-vue";
 import DialogForm from "./DialogForm.vue";
+import { onMounted } from "vue";
 
-const { columns, dataList, options, handleSelectionChange } = uesTabTable();
+const {
+  columns,
+  tableData,
+  handDelete,
+  loadData,
+  options,
+  handleSelectionChange
+} = uesTabTable();
 
 function getData(data) {
   console.log(data, data.row);
@@ -17,14 +25,22 @@ const popoverRef = ref();
 const onClickOutside = () => {
   unref(popoverRef).popperRef?.delayHide?.();
 };
+onMounted(() => {
+  loadData();
+});
 const searchModel = ref("");
 const dialogVisible = ref(false);
+const dialogDtata = ref({});
+function handEdit(data) {
+  dialogVisible.value = true;
+  dialogDtata.value = data;
+}
 </script>
 
 <template>
   <div class="flex">
     <div class="head">
-      <div>手抄报列表</div>
+      <div>用户列表</div>
       <div>
         <el-input
           v-model="searchModel"
@@ -38,7 +54,8 @@ const dialogVisible = ref(false);
     </div>
     <pure-table
       row-key="id"
-      :data="dataList"
+      :data="tableData.list"
+      :loading="tableData.isLoading"
       :columns="columns"
       @selection-change="handleSelectionChange"
     >
@@ -49,13 +66,16 @@ const dialogVisible = ref(false);
         <el-tag type="warning">Tag 4</el-tag>
         <el-tag type="danger">Tag 5</el-tag> -->
       </template>
-      <template #operation>
-        <el-icon>
-          <Remove />
-        </el-icon>
-        <el-icon>
-          <Edit />
-        </el-icon>
+      <template #operation="{ row }">
+        <div class="table_operation">
+          <el-icon @click="handDelete(row._id)">
+            <Remove />
+          </el-icon>
+
+          <el-icon @click="handEdit(row)">
+            <Edit />
+          </el-icon>
+        </div>
       </template>
     </pure-table>
     <el-popover
@@ -81,6 +101,7 @@ const dialogVisible = ref(false);
 .flex {
   display: flex;
   flex-direction: column;
+  padding: 20px;
 }
 
 .head {

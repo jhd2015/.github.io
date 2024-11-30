@@ -91,6 +91,9 @@ export const getMine = (data?: any) => {
     }
   );
 };
+export const getUserList = (data?: any) => {
+  return http.request<any>("get", "/user/list", { data });
+};
 
 /** 账户设置-个人安全日志 */
 export const getMineLogs = (data?: object) => {

@@ -1,80 +1,40 @@
 import { ref } from "vue";
-import { clone } from "@pureadmin/utils";
-import dayjs from "dayjs";
-
-const date = dayjs(new Date()).format("YYYY-MM-DD");
-const tableData = [
-  {
-    date,
-    name: "序号",
-    address: "No. 189, Grove St, Los Angeles"
-  },
-  {
-    date,
-    name: "Jack",
-    address: "No. 189, Grove St, Los Angeles"
-  },
-  {
-    date,
-    name: "Dick",
-    address: "No. 189, Grove St, Los Angeles"
-  },
-  {
-    date,
-    name: "Harry",
-    address: "No. 189, Grove St, Los Angeles"
-  },
-  {
-    date,
-    name: "Sam",
-    address: "No. 189, Grove St, Los Angeles"
-  },
-  {
-    date,
-    name: "Lucy",
-    address: "No. 189, Grove St, Los Angeles"
-  },
-  {
-    date,
-    name: "Mary",
-    address: "No. 189, Grove St, Los Angeles"
-  },
-  {
-    date,
-    name: "Mike",
-    address: "No. 189, Grove St, Los Angeles"
-  },
-  {
-    date,
-    name: "Mike1",
-    address: "No. 189, Grove St, Los Angeles"
-  },
-  {
-    date,
-    name: "Mike2",
-    address: "No. 189, Grove St, Los Angeles"
-  }
-];
-const tableDataDrag = clone(tableData, true).map((item, index) => {
-  delete item.address;
-  delete item.date;
-  return Object.assign(item, {
-    id: index + 1,
-    date: `${dayjs(new Date()).format("YYYY-MM")}-${index + 1}`
-  });
-});
+import { ElMessage, ElMessageBox } from "element-plus";
+import { materialDeleteApi } from "@/api/teachingAids";
+import { getUserList } from "@/api/user";
 
 export function uesTabTable() {
-  const dataList = ref(clone(tableDataDrag, true));
+  const tableData = ref({
+    list: [],
+    isLoading: false
+  });
+  function loadData() {
+    tableData.value.isLoading = true;
+
+    getUserList({})
+      .then(list => {
+        tableData.value.list = list.map(item => {
+          if (typeof item.img === "string") {
+            // const array = item.img
+            //   .match(/'([^']+)'/g)
+            //   .map(item => item.slice(1, -1));
+            // console.log(array);
+            item.img = item.img.split(",");
+          }
+          return item;
+        });
+      })
+      .finally(() => {
+        tableData.value.isLoading = false;
+      });
+  }
 
   const columns = ref<TableColumnList>([
-    {
-      label: "序号",
-      prop: "id"
-    },
+    { type: "index", label: "序号", width: 100 },
     {
       label: "手机号",
-      prop: "date"
+      prop: "phone_info.phoneNumber",
+      width: 150
     },
     {
       label: "昵称",
@@ -101,11 +61,14 @@ export function uesTabTable() {
     },
     {
       label: "链接数",
-      prop: "name"
+      prop: "likes",
+      cellRenderer({ row }: any) {
+        return row?.likes?.length;
+      }
     },
     {
       label: "创建时间",
-      prop: "name"
+      prop: "date"
     },
     {
       label: "ip地址",
@@ -203,10 +166,28 @@ export function uesTabTable() {
   function handleSelectionChange(val) {
     console.log(val);
   }
+  function handDelete(id) {
+    ElMessageBox.confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning"
+    })
+      .then(() => {
+        materialDeleteApi({ id }).then(() => {
+          ElMessage.success("删除成功");
+          loadData();
+        });
+      })
+      .catch(() => {
+        ElMessage.info("已取消删除");
+      });
+  }
   return {
     columns,
-    dataList,
+    loadData,
     options,
+    tableData,
+    handDelete,
     handleSelectionChange
   };
 }
