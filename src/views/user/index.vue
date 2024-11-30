@@ -1,0 +1,91 @@
+<script setup lang="ts">
+import { ref, unref } from "vue";
+import { uesTabTable } from "./uesTabTable";
+import { Search } from "@element-plus/icons-vue";
+import DialogForm from "./DialogForm.vue";
+
+const { columns, dataList, options, handleSelectionChange } = uesTabTable();
+
+function getData(data) {
+  console.log(data, data.row);
+}
+const propsData = { multiple: true };
+
+const cascaderValue = ref([]);
+const buttonRef = ref();
+const popoverRef = ref();
+const onClickOutside = () => {
+  unref(popoverRef).popperRef?.delayHide?.();
+};
+const searchModel = ref("");
+const dialogVisible = ref(false);
+</script>
+
+<template>
+  <div class="flex">
+    <div class="head">
+      <div>手抄报列表</div>
+      <div>
+        <el-input
+          v-model="searchModel"
+          :suffix-icon="Search"
+          style="width: 240px; margin-right: 20px"
+          placeholder="请输入"
+        />
+
+        <el-button type="primary" @click="dialogVisible = true">新增</el-button>
+      </div>
+    </div>
+    <pure-table
+      row-key="id"
+      :data="dataList"
+      :columns="columns"
+      @selection-change="handleSelectionChange"
+    >
+      <template #state>
+        <el-tag type="primary">状态</el-tag>
+        <!-- <el-tag type="success">Tag 2</el-tag>
+        <el-tag type="info">Tag 3</el-tag>
+        <el-tag type="warning">Tag 4</el-tag>
+        <el-tag type="danger">Tag 5</el-tag> -->
+      </template>
+      <template #operation>
+        <el-icon>
+          <Remove />
+        </el-icon>
+        <el-icon>
+          <Edit />
+        </el-icon>
+      </template>
+    </pure-table>
+    <el-popover
+      ref="popoverRef"
+      :virtual-ref="buttonRef"
+      width="400px"
+      trigger="click"
+      virtual-triggering
+      placement="bottom-start"
+    >
+      <div>
+        <el-cascader-panel
+          v-model="cascaderValue"
+          :props="{ multiple: true }"
+          :options="options"
+        />
+      </div>
+    </el-popover>
+  </div>
+  <DialogForm v-model="dialogVisible" />
+</template>
+<style lang="scss" scoped>
+.flex {
+  display: flex;
+  flex-direction: column;
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+</style>
