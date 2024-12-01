@@ -8,10 +8,12 @@ const {
   columns,
   tableData,
   options,
+  searchModel,
   handleSelectionChange,
   loadData,
   copyTextToClipboard,
-  handDelete
+  handDelete,
+  headOperationAll
 } = uesTabTable();
 onMounted(() => {
   loadData();
@@ -28,7 +30,7 @@ const popoverRef = ref();
 const onClickOutside = () => {
   unref(popoverRef).popperRef?.delayHide?.();
 };
-const searchModel = ref("");
+
 const dialogVisible = ref(false);
 const dialogDtata = ref({});
 function handEdit(data) {
@@ -47,15 +49,31 @@ defineOptions({
       <div>手抄报列表</div>
       <div>
         <el-input
-          v-model="searchModel"
+          v-model="searchModel.title"
           :suffix-icon="Search"
-          style="width: 240px; margin-right: 20px"
-          placeholder="请输入"
+          style=" width: 150px;margin-right: 10px"
+          placeholder="请输入标题"
         />
-        <el-button>批量上架</el-button>
-        <el-button>批量下架</el-button>
-        <el-button>批量删除</el-button>
-        <el-button type="primary">设置免费</el-button>
+        <el-input
+          v-model="searchModel.month"
+          :suffix-icon="Search"
+          style=" width: 150px;margin-right: 10px"
+          placeholder="请输入月分"
+        />
+        <el-input
+          v-model="searchModel.baiduLink"
+          :suffix-icon="Search"
+          style=" width: 150px;margin-right: 20px"
+          placeholder="请输入标题"
+        />
+        <el-button type="primary" @click="loadData">搜索</el-button>
+
+        <el-button @click="headOperationAll('upper')">批量上架</el-button>
+        <el-button @click="headOperationAll('lower')">批量下架</el-button>
+        <el-button @click="headOperationAll('delete')">批量删除</el-button>
+        <el-button type="primary" @click="headOperationAll('free')">
+          设置免费
+        </el-button>
         <el-button type="primary" @click="dialogVisible = true">新增</el-button>
       </div>
     </div>

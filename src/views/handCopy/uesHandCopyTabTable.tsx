@@ -1,6 +1,6 @@
 import Sortable from "sortablejs";
 import { ref, nextTick } from "vue";
-import { handListApi } from "@/api/handCopy";
+import { handListApi, operationApi } from "@/api/handCopy";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { handDeleteApi } from "../../api/handCopy";
 import { copyTextToClipboard } from "@/utils";
@@ -26,10 +26,15 @@ export function uesTabTable() {
     list: [],
     isLoading: false
   });
+  const searchModel = ref({
+    title: "",
+    month: "",
+    baiduLink: ""
+  });
   function loadData() {
     tableData.value.isLoading = true;
 
-    handListApi({})
+    handListApi(searchModel.value)
       .then(list => {
         tableData.value.list = list.map(item => {
           if (typeof item.img === "string") {
@@ -98,12 +103,22 @@ export function uesTabTable() {
     },
     {
       label: "格式",
+      prop: "starCoin"
+    },
+    {
+      label: "格式",
       prop: "name"
     },
     {
       label: "状态",
-      prop: "state",
-      slot: "state"
+      prop: "status",
+      cellRenderer: ({ row }) => {
+        if (row.status) {
+          return <el-tag type="primary">上架</el-tag>;
+        } else {
+          return <el-tag type="danger">下架</el-tag>;
+        }
+      }
     },
     {
       label: "更新日期",
@@ -199,8 +214,12 @@ export function uesTabTable() {
       ]
     }
   ];
-  function handleSelectionChange(val) {
-    console.log(val);
+  const ids = ref([]);
+  function handleSelectionChange(list) {
+    ids.value = [];
+    ids.value = list.map(({ _id }) => {
+      return _id;
+    });
   }
 
   function handDelete(id) {
@@ -219,14 +238,37 @@ export function uesTabTable() {
         ElMessage.info("已取消删除");
       });
   }
+  /**
+    *
+    *  <el-button @click="headOperationAll('upper')" >批量上架</el-button>
+        <el-button @click="headOperationAll('lower')">批量下架</el-button>
+        <el-button @click="headOperationAll('delete')">批量删除</el-button>
+        <el-button @click="headOperationAll('free')" type="primary">设置免费</el-button>
+
+  **/
+  function headOperationAll(type: "upper" | "lower" | "delete" | "free") {
+    // type === "upper";
+    const formData = new FormData();
+    // ids.value.forEach((id, index) => {
+    //   formData.append(`ids${index}`, id);
+    // });
+    formData.append(`ids`, JSON.stringify(ids.value));
+    operationApi[type] &&
+      operationApi[type](formData)?.then(() => {
+        ElMessage.success("操作成功");
+        loadData();
+      });
+  }
 
   return {
     columns,
     tableData,
     options,
+    searchModel,
     handleSelectionChange,
     loadData,
     copyTextToClipboard,
-    handDelete
+    handDelete,
+    headOperationAll
   };
 }

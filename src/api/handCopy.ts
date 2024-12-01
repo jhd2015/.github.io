@@ -21,8 +21,48 @@ export const handUploadApi = data => {
     { data },
     {
       headers: {
-        "Content-Type": "multipart/form-data"
+        "Content-Type": "application/x-www-form-urlencoded"
       }
     }
   );
+};
+
+export const operationApi = {
+  upper(data) {
+    return http.request<any>(
+      "post",
+      "/hand/on",
+      { data },
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      }
+    );
+  },
+  lower(data) {
+    return http.request<any>(
+      "post",
+      "/hand/off",
+      { data },
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      }
+    );
+  },
+  // delete() {},
+  free(data) {
+    return http.request<any>(
+      "post",
+      "/hand/free",
+      { data },
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      }
+    );
+  }
 };

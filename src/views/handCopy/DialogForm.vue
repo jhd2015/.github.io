@@ -19,7 +19,8 @@ const props = withDefaults(defineProps<Props>(), {
 });
 const ruleForm = ref<{
   _id?: string;
-  number: string;
+  number?: string;
+  starCoin: string;
   title: string;
   month: string;
   festival: string;
@@ -27,7 +28,7 @@ const ruleForm = ref<{
   img: any[];
 }>({
   _id: "",
-  number: "",
+  starCoin: "",
   title: "",
   month: "",
   festival: "",
@@ -51,7 +52,7 @@ watch(
 const emit = defineEmits(["refresh"]);
 
 const rules = reactive<any>({
-  number: [{ required: true, message: "不可以为空" }],
+  starCoin: [{ required: true, message: "不可以为空" }],
   title: [{ required: true, message: "不可以为空" }],
   baiduLink: [{ required: true, message: "不可以为空" }],
   month: [{ required: true, message: "不可以为空" }],
@@ -387,8 +388,8 @@ function handSubmit() {
       class="demo-ruleForm"
       status-icon
     >
-      <el-form-item label="编号" prop="number">
-        <el-input v-model="ruleForm.number" placeholder="请输入" />
+      <el-form-item label="星币" prop="starCoin">
+        <el-input v-model="ruleForm.starCoin" placeholder="请输入" />
       </el-form-item>
       <el-form-item label="标题" prop="title">
         <el-input
