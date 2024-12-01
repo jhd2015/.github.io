@@ -249,9 +249,6 @@ export function uesTabTable() {
   function headOperationAll(type: "upper" | "lower" | "delete" | "free") {
     // type === "upper";
     const formData = new FormData();
-    // ids.value.forEach((id, index) => {
-    //   formData.append(`ids${index}`, id);
-    // });
     formData.append(`ids`, JSON.stringify(ids.value));
     operationApi[type] &&
       operationApi[type](formData)?.then(() => {

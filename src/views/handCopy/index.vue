@@ -51,19 +51,19 @@ defineOptions({
         <el-input
           v-model="searchModel.title"
           :suffix-icon="Search"
-          style=" width: 150px;margin-right: 10px"
+          style="width: 150px; margin-right: 10px"
           placeholder="请输入标题"
         />
         <el-input
           v-model="searchModel.month"
           :suffix-icon="Search"
-          style=" width: 150px;margin-right: 10px"
+          style="width: 150px; margin-right: 10px"
           placeholder="请输入月分"
         />
         <el-input
           v-model="searchModel.baiduLink"
           :suffix-icon="Search"
-          style=" width: 150px;margin-right: 20px"
+          style="width: 150px; margin-right: 20px"
           placeholder="请输入标题"
         />
         <el-button type="primary" @click="loadData">搜索</el-button>
