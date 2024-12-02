@@ -248,10 +248,10 @@ export function uesTabTable() {
   **/
   function headOperationAll(type: "upper" | "lower" | "delete" | "free") {
     // type === "upper";
-    const formData = new FormData();
-    formData.append(`ids`, JSON.stringify(ids.value));
+    // const formData = new FormData();
+    // formData.append(`ids`, JSON.stringify(ids.value));
     operationApi[type] &&
-      operationApi[type](formData)?.then(() => {
+      operationApi[type]({ ids: JSON.stringify(ids.value) })?.then(() => {
         ElMessage.success("操作成功");
         loadData();
       });
