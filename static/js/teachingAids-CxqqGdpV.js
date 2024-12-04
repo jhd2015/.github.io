@@ -1,0 +1,1 @@
+import{aM as e}from"./index-oC8DoOwB.js";const r=t=>e.request("post","/material/add",{data:t}),s=t=>e.request("get","/material/list",{data:t}),i=t=>e.request("post","/material/delete",{data:t}),p=t=>e.request("post","/material/update",{data:t});export{i as a,p as b,r as c,s as m};
