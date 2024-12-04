@@ -1,4 +1,6 @@
 import shuiYing from "@/assets/shuiYing.png";
+import background from "@/assets/heCheng/background.png";
+import hand from "@/assets/heCheng/hand.png";
 
 export function useUpload() {
   async function combineImages(img1, img2): Promise<any> {
@@ -81,6 +83,89 @@ export function useUpload() {
     watermark
   };
 }
+export function useUploadVertical() {
+  async function combineImages(img: HTMLImageElement): Promise<any> {
+    const canvas = document.createElement("canvas");
+    const backgroundRec = await ImageLoadimg(background);
+    const handRec = await ImageLoadimg(hand);
+
+    const rotateAngle = (-11.7 * Math.PI) / 180; // 将角度转换为弧度
+    const img1Width = backgroundRec.width;
+    const img1Height = backgroundRec.height;
+
+    // 设置 canvas 的宽度和高度，考虑到旋转后的图片尺寸变化
+    canvas.width = img1Width;
+    canvas.height = img1Height;
+
+    const ctx = canvas.getContext("2d");
+
+    // 绘制背景
+    ctx.drawImage(backgroundRec, 0, 0, img1Width, img1Height);
+
+    // 绘制第二张图片
+    // 旋转前需要先平移到正确的位置
+    ctx.save();
+    const imgWidth = 795;
+    const imgHeight = 1123.14;
+    const img2X = (canvas.width - imgWidth) / 2;
+    const img2Y = (canvas.height - imgHeight) / 2;
+    ctx.translate(img2X + imgWidth / 2, img2Y + imgHeight / 2);
+    ctx.rotate(rotateAngle);
+    // 因为旋转了，所以需要将图片平移回原位置
+    ctx.drawImage(
+      img,
+      -imgWidth / 2 - 3,
+      -imgHeight / 2 + 55,
+      imgWidth,
+      imgHeight
+    );
+    ctx.restore();
+
+    // 绘制背景2
+    // const handRecX = canvas.width - handRec.width;
+    const handRecY = canvas.height - handRec.height;
+    ctx.drawImage(handRec, 0, handRecY, handRec.width, handRec.height);
+
+    // 水印
+    const shuiYingSrc = await ImageLoadimg(shuiYing);
+    watermark(shuiYingSrc, {
+      ctx,
+      canvasWidth: canvas.width,
+      canvasHeight: canvas.height
+    });
+
+    // 将画布内容转换为 Blob
+    return new Promise(resolve => {
+      canvas.toBlob(blob => {
+        const newFile = new File([blob], "merged-image.png", {
+          type: "image/png",
+          lastModified: Date.now()
+        });
+        canvas.remove();
+        resolve({ raw: newFile, url: URL.createObjectURL(blob) });
+      });
+    });
+  }
+
+  function getFileReader(file): Promise<HTMLImageElement> {
+    const reader = new FileReader();
+    return new Promise(resolve => {
+      reader.onload = async (e: any) => {
+        const img = await ImageLoadimg(e.target.result as string);
+        resolve(img);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  return {
+    combineImages,
+    getFileReader,
+    ImageLoadimg,
+    watermark
+  };
+}
+
 export function ImageLoadimg(src): Promise<HTMLImageElement> {
   return new Promise(resolve => {
     const img = new Image();

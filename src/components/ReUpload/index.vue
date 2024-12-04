@@ -4,7 +4,7 @@ import EditDrawer from "@/components/ReUpload/EditDrawer.vue";
 import { ref, nextTick } from "vue";
 import { computed } from "vue";
 import { debounce } from "@pureadmin/utils";
-import { useUpload } from "./useUpload";
+import { useUploadVertical } from "./useUpload";
 import { handUploadApi } from "@/api/handCopy";
 interface Props {
   name: string;
@@ -12,7 +12,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   name: "1"
 });
-const { getFileReader, combineImages } = useUpload();
+const { getFileReader, combineImages } = useUploadVertical();
 const action = `${import.meta.env.VITE_APP_BASE_API}/upload`;
 const fileList = defineModel<any[]>();
 const fileListSrc = computed(() => {
@@ -54,8 +54,49 @@ function handEdit() {
 function handleChange(file, fileList) {
   debounceRealTimeCroppered();
 }
-const debounceRealTimeCroppered = debounce(mergeImages, 500);
-async function mergeImages() {
+const debounceRealTimeCroppered = debounce(mergeImagesVertical, 500);
+// async function mergeImages() {
+//   const list = [];
+//   const combineList = [];
+//   fileList.value.forEach(item => {
+//     if (item.response || item.status == "success") {
+//       list.push(item);
+//     } else {
+//       combineList.push(item);
+//     }
+//   });
+//   const [file1, file2] = combineList;
+//   file1.status = "uploading";
+//   if (file2) {
+//     file2.status = "uploading";
+//   }
+
+//   const src1 = await getFileReader(file1.raw);
+//   const src2 = file2 ? await getFileReader(file2.raw) : false;
+//   const file = await combineImages(src1, src2);
+
+//   const formData = new FormData();
+//   formData.append("file", file.raw);
+//   await handUploadApi(formData)
+//     .then(res => {
+//       file.response = res;
+//       file.status = "success";
+//       list.push(file);
+//       fileList.value = list;
+//     })
+//     .catch(err => {
+//       console.log(err);
+//       file.status = "fail";
+//       list.push(file);
+//       fileList.value = list;
+//     });
+
+//   // nextTick(() => {
+//   //   debugger;
+//   //   uploadRef.value.submit();
+//   // });
+// }
+async function mergeImagesVertical() {
   const list = [];
   const combineList = [];
   fileList.value.forEach(item => {
@@ -65,36 +106,27 @@ async function mergeImages() {
       combineList.push(item);
     }
   });
-  const [file1, file2] = combineList;
-  file1.status = "uploading";
-  if (file2) {
-    file2.status = "uploading";
-  }
-
-  const src1 = await getFileReader(file1.raw);
-  const src2 = file2 ? await getFileReader(file2.raw) : false;
-  const file = await combineImages(src1, src2);
-
-  const formData = new FormData();
-  formData.append("file", file.raw);
-  await handUploadApi(formData)
-    .then(res => {
-      file.response = res;
-      file.status = "success";
-      list.push(file);
-      fileList.value = list;
-    })
-    .catch(err => {
-      console.log(err);
-      file.status = "fail";
-      list.push(file);
-      fileList.value = list;
+  combineList.forEach(item => {
+    item.status = "uploading";
+    getFileReader(item.raw).then(async src => {
+      try {
+        const file = await combineImages(src);
+        const formData = new FormData();
+        formData.append("file", file.raw);
+        const ret = await handUploadApi(formData);
+        file.response = ret;
+        item.url = file.url;
+        item.status = "success";
+        list.push(file);
+        fileList.value = list;
+      } catch (error) {
+        console.log(error);
+        item.status = "fail";
+        list.push(item);
+        fileList.value = list;
+      }
     });
-
-  // nextTick(() => {
-  //   debugger;
-  //   uploadRef.value.submit();
-  // });
+  });
 }
 </script>
 
