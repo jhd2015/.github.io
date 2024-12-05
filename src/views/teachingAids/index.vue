@@ -11,7 +11,9 @@ const {
   handleSelectionChange,
   handDelete,
   tableData,
-  loadData
+  loadData,
+  headOperationAll,
+  searchModel
 } = uesTabTable();
 
 function getData(data) {
@@ -25,7 +27,7 @@ const popoverRef = ref();
 const onClickOutside = () => {
   unref(popoverRef).popperRef?.delayHide?.();
 };
-const searchModel = ref("");
+
 const dialogVisible = ref(false);
 const dialogDtata = ref({});
 function handEdit(data) {
@@ -46,15 +48,18 @@ defineOptions({
       <div>教辅资料</div>
       <div>
         <el-input
-          v-model="searchModel"
+          v-model="searchModel.title"
           :suffix-icon="Search"
           style="width: 240px; margin-right: 20px"
-          placeholder="请输入"
+          placeholder="请输入名称"
+          @keyup.enter="loadData"
         />
-        <el-button>批量上架</el-button>
-        <el-button>批量下架</el-button>
-        <el-button>批量删除</el-button>
-        <el-button type="primary">设置免费</el-button>
+        <el-button @click="headOperationAll('upper')">批量上架</el-button>
+        <el-button @click="headOperationAll('lower')">批量下架</el-button>
+        <el-button @click="headOperationAll('delete')">批量删除</el-button>
+        <el-button type="primary" @click="headOperationAll('free')">
+          设置免费
+        </el-button>
         <el-button type="primary" @click="dialogVisible = true">新增</el-button>
       </div>
     </div>

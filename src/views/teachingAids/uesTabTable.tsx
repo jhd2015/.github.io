@@ -1,7 +1,11 @@
 import Sortable from "sortablejs";
 import { ref, nextTick } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { materialDeleteApi, materialListApi } from "@/api/teachingAids";
+import {
+  materialDeleteApi,
+  materialListApi,
+  operationApi
+} from "@/api/teachingAids";
 
 const options = [
   {
@@ -92,10 +96,13 @@ export function uesTabTable() {
     list: [],
     isLoading: false
   });
+  const searchModel = ref({
+    title: ""
+  });
   function loadData() {
     tableData.value.isLoading = true;
 
-    materialListApi({})
+    materialListApi(searchModel.value)
       .then(list => {
         tableData.value.list = list.map(item => {
           if (typeof item.img === "string") {
@@ -181,7 +188,13 @@ export function uesTabTable() {
     {
       label: "状态",
       prop: "state",
-      slot: "state"
+      cellRenderer: ({ row }) => {
+        if (row.status) {
+          return <el-tag type="primary">上架</el-tag>;
+        } else {
+          return <el-tag type="danger">下架</el-tag>;
+        }
+      }
     },
     {
       label: "大小",
@@ -198,10 +211,6 @@ export function uesTabTable() {
       width: 200
     }
   ]);
-
-  function handleSelectionChange(val) {
-    console.log(val);
-  }
   function handDelete(id) {
     ElMessageBox.confirm("此操作将永久删除该文件, 是否继续?", "提示", {
       confirmButtonText: "确定",
@@ -218,12 +227,28 @@ export function uesTabTable() {
         ElMessage.info("已取消删除");
       });
   }
+  function headOperationAll(type: "upper" | "lower" | "delete" | "free") {
+    operationApi[type] &&
+      operationApi[type]({ ids: JSON.stringify(ids.value) })?.then(() => {
+        ElMessage.success("操作成功");
+        loadData();
+      });
+  }
+  const ids = ref([]);
+  function handleSelectionChange(list) {
+    ids.value = [];
+    ids.value = list.map(({ _id }) => {
+      return _id;
+    });
+  }
   return {
     columns,
     options,
     handleSelectionChange,
     handDelete,
     loadData,
-    tableData
+    tableData,
+    searchModel,
+    headOperationAll
   };
 }

@@ -1,8 +1,7 @@
 import Sortable from "sortablejs";
 import { ref, nextTick } from "vue";
-import { handListApi, operationApi } from "@/api/handCopy";
+import { handListApi, operationApi, handDeleteApi } from "@/api/handCopy";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { handDeleteApi } from "../../api/handCopy";
 import { copyTextToClipboard } from "@/utils";
 
 export function uesTabTable() {

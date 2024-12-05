@@ -26,3 +26,16 @@ export const materialUploadApi = data => {
     }
   );
 };
+
+export const operationApi = {
+  upper(data) {
+    return http.request<any>("post", "/material/on", { data });
+  },
+  lower(data) {
+    return http.request<any>("post", "/material/off", { data });
+  },
+  // delete() {},
+  free(data) {
+    return http.request<any>("post", "/material/free", { data });
+  }
+};
