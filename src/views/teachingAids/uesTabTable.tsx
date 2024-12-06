@@ -91,18 +91,26 @@ const options = [
   }
 ];
 
-export function uesTabTable() {
+export function uesTabTable(props: any) {
   const tableData = ref({
     list: [],
     isLoading: false
   });
-  const searchModel = ref({
+  const searchModel = ref<any>({
     title: ""
   });
+  if (props.isStarCoin) {
+    searchModel.value.starCoin = 0;
+  }
   function loadData() {
     tableData.value.isLoading = true;
-
-    materialListApi(searchModel.value)
+    const data = {};
+    for (let key in searchModel.value) {
+      if (searchModel.value[key]) {
+        data[key] = searchModel.value[key];
+      }
+    }
+    materialListApi(data)
       .then(list => {
         tableData.value.list = list.map(item => {
           if (typeof item.img === "string") {
@@ -182,8 +190,15 @@ export function uesTabTable() {
       headerSlot: "jointLevel3"
     },
     {
-      label: "格式",
-      prop: "name"
+      label: "星币数",
+      prop: "starCoin",
+      cellRenderer: ({ row }) => {
+        if (row.starCoin > 0) {
+          return row.starCoin;
+        } else {
+          return "免费";
+        }
+      }
     },
     {
       label: "状态",

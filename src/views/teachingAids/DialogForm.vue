@@ -17,7 +17,8 @@ const props = withDefaults(defineProps<Props>(), {
     type2: "",
     type3: "",
     baiduLink: "",
-    img: []
+    img: [],
+    starCoin: 0
   }
 });
 function handleClose() {
@@ -31,19 +32,22 @@ const ruleForm = ref<{
   type3: string;
   baiduLink: string;
   img: any[];
+  starCoin: number;
 }>({
   title: "",
   type1: "",
   type2: "",
   type3: "",
   baiduLink: "",
-  img: []
+  img: [],
+  starCoin: 0
 });
 watch(
   () => dialogVisible.value,
   () => {
     ruleForm.value = {
       ...props.data,
+      starCoin: Number(props.data.starCoin || 0),
       img: props.data.img?.map(item => {
         return {
           url: item,
@@ -378,7 +382,7 @@ function headPDupload(data: any) {
 <template>
   <el-dialog
     v-model="dialogVisible"
-    :title="`${props.data?.id ? '新增' : '编辑'}辅材资料`"
+    :title="`${props.data?._id ? '编辑' : '新增'}辅材资料`"
     width="500"
   >
     <el-form
@@ -393,6 +397,13 @@ function headPDupload(data: any) {
       <!-- <el-form-item label="编号" prop="name">
         <el-input v-model="ruleForm.name" placeholder="请输入" />
       </el-form-item> -->
+      <el-form-item label="星币" prop="starCoin">
+        <el-input-number
+          v-model="ruleForm.starCoin"
+          :min="0"
+          placeholder="请输入"
+        />
+      </el-form-item>
       <el-form-item label="标题" prop="title">
         <el-input v-model="ruleForm.title" placeholder="请输入" />
       </el-form-item>

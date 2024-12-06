@@ -3,6 +3,12 @@ import { ref, unref, onMounted } from "vue";
 import { uesTabTable } from "./uesHandCopyTabTable";
 import { Search } from "@element-plus/icons-vue";
 import DialogForm from "./DialogForm.vue";
+interface Props {
+  isStarCoin: any;
+}
+const props = withDefaults(defineProps<Props>(), {
+  isStarCoin: false
+});
 
 const {
   columns,
@@ -14,7 +20,7 @@ const {
   copyTextToClipboard,
   handDelete,
   headOperationAll
-} = uesTabTable();
+} = uesTabTable(props);
 onMounted(() => {
   loadData();
 });
@@ -70,7 +76,9 @@ defineOptions({
 
         <el-button @click="headOperationAll('upper')">批量上架</el-button>
         <el-button @click="headOperationAll('lower')">批量下架</el-button>
-        <el-button @click="headOperationAll('delete')">批量删除</el-button>
+        <el-button v-if="props.isStarCoin" @click="headOperationAll('delete')"
+          >批量删除</el-button
+        >
         <el-button type="primary" @click="headOperationAll('free')">
           设置免费
         </el-button>

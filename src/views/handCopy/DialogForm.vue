@@ -20,7 +20,7 @@ const props = withDefaults(defineProps<Props>(), {
 const ruleForm = ref<{
   _id?: string;
   number?: string;
-  starCoin: string;
+  starCoin: number;
   title: string;
   month: string;
   festival: string;
@@ -28,7 +28,7 @@ const ruleForm = ref<{
   img: any[];
 }>({
   _id: "",
-  starCoin: "",
+  starCoin: 0,
   title: "",
   month: "",
   festival: "",
@@ -40,6 +40,7 @@ watch(
   () => {
     ruleForm.value = {
       ...props.data,
+      starCoin: Number(props.data.starCoin || 0),
       img: props.data.img?.map(item => {
         return {
           url: item,
@@ -376,7 +377,7 @@ function handSubmit() {
 <template>
   <el-dialog
     v-model="dialogVisible"
-    :title="`${props.data?.id ? '新增' : '编辑'}手抄报`"
+    :title="`${props.data?._id ? '编辑' : '新增'}手抄报`"
     width="500"
   >
     <el-form
@@ -389,7 +390,11 @@ function handSubmit() {
       status-icon
     >
       <el-form-item label="星币" prop="starCoin">
-        <el-input v-model="ruleForm.starCoin" placeholder="请输入" />
+        <el-input-number
+          v-model="ruleForm.starCoin"
+          :min="0"
+          placeholder="请输入"
+        />
       </el-form-item>
       <el-form-item label="标题" prop="title">
         <el-input

@@ -4,7 +4,12 @@ import { uesTabTable } from "./uesTabTable";
 import { copyTextToClipboard } from "@/utils";
 import { Search } from "@element-plus/icons-vue";
 import DialogForm from "./DialogForm.vue";
-
+interface Props {
+  isStarCoin: any;
+}
+const props = withDefaults(defineProps<Props>(), {
+  isStarCoin: false
+});
 const {
   columns,
   options,
@@ -14,7 +19,7 @@ const {
   loadData,
   headOperationAll,
   searchModel
-} = uesTabTable();
+} = uesTabTable(props);
 
 function getData(data) {
   console.log(data, data.row);

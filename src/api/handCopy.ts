@@ -4,8 +4,8 @@ export const handAddApi = data => {
   return http.request<any>("post", "/hand/add", { data });
 };
 
-export const handListApi = data => {
-  return http.request<any>("get", "/hand/list", { data });
+export const handListApi = params => {
+  return http.request<any>("get", "/hand/list", { params });
 };
 export const handDeleteApi = data => {
   return http.request<any>("post", "/hand/delete", { data });

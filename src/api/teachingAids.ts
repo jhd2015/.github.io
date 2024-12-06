@@ -4,8 +4,8 @@ export const materialAddApi = data => {
   return http.request<any>("post", "/material/add", { data });
 };
 
-export const materialListApi = data => {
-  return http.request<any>("get", "/material/list", { data });
+export const materialListApi = params => {
+  return http.request<any>("get", "/material/list", { params });
 };
 export const materialDeleteApi = data => {
   return http.request<any>("post", "/material/delete", { data });

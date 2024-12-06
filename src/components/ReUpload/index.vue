@@ -115,7 +115,7 @@ async function mergeImagesVertical() {
         formData.append("file", file.raw);
         const ret = await handUploadApi(formData);
         file.response = ret;
-        item.url = file.url;
+        // item.url = file.url;
         item.status = "success";
         list.push(file);
         fileList.value = list;

@@ -3,6 +3,8 @@ import { ref } from "vue";
 import type { TabsPaneContext } from "element-plus";
 import TabTable from "./tabs/TabTable.vue";
 import { Search } from "@element-plus/icons-vue";
+import handCopy from "@/views/handCopy/index.vue";
+import teachingAids from "@/views/teachingAids/index.vue";
 const activeName = ref("first");
 const searchModel = ref("");
 
@@ -16,22 +18,12 @@ defineOptions({
 
 <template>
   <div class="shell">
-    <div class="searchBox">
-      <el-input
-        v-model="searchModel"
-        :suffix-icon="Search"
-        style="width: 240px; margin-right: 20px"
-        placeholder="请输入"
-      />
-      <el-button type="primary">刷新</el-button>
-    </div>
-
     <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
       <el-tab-pane label="手抄报" name="first">
-        <TabTable type="1" />
+        <handCopy :isStarCoin="true" />
       </el-tab-pane>
       <el-tab-pane label="教辅资料" name="second">
-        <TabTable type="2" />
+        <teachingAids :isStarCoin="true" />
       </el-tab-pane>
     </el-tabs>
   </div>

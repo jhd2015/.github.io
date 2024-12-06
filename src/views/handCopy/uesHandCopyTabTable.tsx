@@ -4,7 +4,7 @@ import { handListApi, operationApi, handDeleteApi } from "@/api/handCopy";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { copyTextToClipboard } from "@/utils";
 
-export function uesTabTable() {
+export function uesTabTable(props: any) {
   const rowDrop = (event: { preventDefault: () => void }) => {
     event.preventDefault();
     nextTick(() => {
@@ -25,15 +25,25 @@ export function uesTabTable() {
     list: [],
     isLoading: false
   });
-  const searchModel = ref({
+  const searchModel = ref<any>({
     title: "",
     month: "",
     baiduLink: ""
   });
+  console.log(props);
+  if (props.isStarCoin) {
+    searchModel.value.starCoin = "0";
+  }
   function loadData() {
     tableData.value.isLoading = true;
+    const data = {};
+    for (let key in searchModel.value) {
+      if (searchModel.value[key]) {
+        data[key] = searchModel.value[key];
+      }
+    }
 
-    handListApi(searchModel.value)
+    handListApi(data)
       .then(list => {
         tableData.value.list = list.map(item => {
           if (typeof item.img === "string") {
@@ -105,8 +115,15 @@ export function uesTabTable() {
       prop: "starCoin"
     },
     {
-      label: "格式",
-      prop: "name"
+      label: "星币数",
+      prop: "starCoin",
+      cellRenderer: ({ row }) => {
+        if (row.starCoin > 0) {
+          return row.starCoin;
+        } else {
+          return "免费";
+        }
+      }
     },
     {
       label: "状态",
