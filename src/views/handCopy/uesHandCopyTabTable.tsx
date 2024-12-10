@@ -272,6 +272,18 @@ export function uesTabTable(props: any) {
         loadData();
       });
   }
+  function handUpper(id) {
+    operationApi.upper({ ids: JSON.stringify([id]) }).then(() => {
+      ElMessage.success("操作成功");
+      loadData();
+    });
+  }
+  function handLower(id) {
+    operationApi.upper({ ids: JSON.stringify([id]) }).then(() => {
+      ElMessage.success("操作成功");
+      loadData();
+    });
+  }
 
   return {
     columns,
@@ -282,6 +294,8 @@ export function uesTabTable(props: any) {
     loadData,
     copyTextToClipboard,
     handDelete,
-    headOperationAll
+    headOperationAll,
+    handUpper,
+    handLower
   };
 }

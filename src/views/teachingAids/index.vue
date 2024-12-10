@@ -18,7 +18,9 @@ const {
   tableData,
   loadData,
   headOperationAll,
-  searchModel
+  searchModel,
+  handUpper,
+  handLower
 } = uesTabTable(props);
 
 function getData(data) {
@@ -38,6 +40,10 @@ const dialogDtata = ref({});
 function handEdit(data) {
   dialogVisible.value = true;
   dialogDtata.value = data;
+}
+function handAdd() {
+  dialogVisible.value = true;
+  dialogDtata.value = {};
 }
 onMounted(() => {
   loadData();
@@ -65,7 +71,7 @@ defineOptions({
         <el-button type="primary" @click="headOperationAll('free')">
           设置免费
         </el-button>
-        <el-button type="primary" @click="dialogVisible = true">新增</el-button>
+        <el-button type="primary" @click="handAdd">新增</el-button>
       </div>
     </div>
     <pure-table
@@ -106,10 +112,10 @@ defineOptions({
           <el-icon @click="handDelete(row._id)">
             <Remove />
           </el-icon>
-          <el-icon>
+          <el-icon @click="handUpper(row._id)">
             <Top />
           </el-icon>
-          <el-icon>
+          <el-icon @click="handLower(row._id)">
             <Bottom />
           </el-icon>
           <el-icon @click="handEdit(row)">
