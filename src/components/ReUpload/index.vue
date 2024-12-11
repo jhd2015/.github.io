@@ -114,9 +114,10 @@ async function mergeImagesVertical() {
         const formData = new FormData();
         formData.append("file", file.raw);
         const ret = await handUploadApi(formData);
+        ret.file = `${import.meta.env.VITE_APP_BASE_IMG}${ret.file}`;
         file.response = ret;
-        // item.url = file.url;
-        item.status = "success";
+        file.url = ret.file;
+        file.status = "success";
         list.push(file);
         fileList.value = list;
       } catch (error) {

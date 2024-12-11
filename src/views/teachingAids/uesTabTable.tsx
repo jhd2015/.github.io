@@ -165,10 +165,12 @@ export function uesTabTable(props: any) {
         </div>
       )
     },
-    // {
-    //   label: "编号",
-    //   prop: "date"
-    // },
+    {
+      label: "封面",
+      prop: "img",
+      slot: "img",
+      width: 60
+    },
     {
       label: "名称",
       prop: "title",

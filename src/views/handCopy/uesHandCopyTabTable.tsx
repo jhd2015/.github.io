@@ -45,16 +45,7 @@ export function uesTabTable(props: any) {
 
     handListApi(data)
       .then(list => {
-        tableData.value.list = list.map(item => {
-          if (typeof item.img === "string") {
-            // const array = item.img
-            //   .match(/'([^']+)'/g)
-            //   .map(item => item.slice(1, -1));
-            // console.log(array);
-            item.img = item.img.split(",");
-          }
-          return item;
-        });
+        tableData.value.list = list;
       })
       .finally(() => {
         tableData.value.isLoading = false;
@@ -84,7 +75,8 @@ export function uesTabTable(props: any) {
     {
       label: "封面",
       prop: "img",
-      slot: "img"
+      slot: "img",
+      width: 60
     },
     {
       label: "编号",

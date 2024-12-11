@@ -383,7 +383,7 @@ function headPDupload(data: any) {
   <el-dialog
     v-model="dialogVisible"
     :title="`${props.data?._id ? '编辑' : '新增'}辅材资料`"
-    width="500"
+    width="800"
   >
     <el-form
       ref="ruleFormRef"

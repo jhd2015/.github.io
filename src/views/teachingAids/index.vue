@@ -82,10 +82,13 @@ defineOptions({
       @selection-change="handleSelectionChange"
     >
       <template #img="{ row }">
-        <div v-if="row?.img">
-          <div v-for="(item, index) in row.img" :key="index">
-            <el-image :src="item" />
-          </div>
+        <div v-if="row?.img" class="imgBox">
+          <el-image
+            :preview-teleported="true"
+            :src="row.img[0]"
+            fit="fill"
+            :preview-src-list="row.img"
+          />
         </div>
       </template>
       <template #jointLevel1>
@@ -154,5 +157,15 @@ defineOptions({
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
+}
+
+.imgBox {
+  display: flex;
+  gap: 10px;
+
+  :deep(.el-image) {
+    width: 50px;
+    height: 50px;
+  }
 }
 </style>

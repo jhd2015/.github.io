@@ -104,10 +104,11 @@ const renderPageAsImage = async (pdf, pageNum) => {
         formData.append("file", newFile);
         handUploadApi(formData)
           .then(res => {
+            res.file = `${import.meta.env.VITE_APP_BASE_IMG}${res.file}`;
             resolve({
               response: res,
               status: "success",
-              url: canvas.toDataURL()
+              url: res.file
             });
           })
           .catch(err => {

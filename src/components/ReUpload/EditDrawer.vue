@@ -4,12 +4,13 @@
     title="图片设置"
     direction="rtl"
     :before-close="handleClose"
+    :width="700"
   >
     <el-form
       :model="form"
       label-width="auto"
       label-position="top"
-      style="max-width: 600px"
+      style="max-width: 800px"
     >
       <el-form-item label="设置开关">
         <el-switch v-model="form.switch" />
