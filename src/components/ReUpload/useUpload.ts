@@ -1,6 +1,8 @@
 import shuiYing from "@/assets/shuiYing.png";
 import background from "@/assets/heCheng/background.png";
+import background2 from "@/assets/heCheng/background2.png";
 import hand from "@/assets/heCheng/hand.png";
+import hand2 from "@/assets/heCheng/hand2.png";
 
 export function useUpload() {
   async function combineImages(img1, img2): Promise<any> {
@@ -86,16 +88,30 @@ export function useUpload() {
 export function useUploadVertical() {
   async function combineImages(img: HTMLImageElement): Promise<any> {
     const canvas = document.createElement("canvas");
-    const backgroundRec = await ImageLoadimg(background);
-    const handRec = await ImageLoadimg(hand);
+    let backgroundRec: HTMLImageElement;
+    let rotateAngle = (-11.7 * Math.PI) / 180; // 将角度转换为弧度
+    let handRec: HTMLImageElement;
+    let handRecY = 0,
+      handRecX = 0;
 
-    const rotateAngle = (-11.7 * Math.PI) / 180; // 将角度转换为弧度
+    if (img.width > img.height) {
+      // 横屏图片
+      backgroundRec = await ImageLoadimg(background2);
+      handRec = await ImageLoadimg(hand2);
+      rotateAngle = (-9.7 * Math.PI) / 180; // 将角度转换为弧度
+    } else {
+      // 竖屏图片
+      backgroundRec = await ImageLoadimg(background);
+      handRec = await ImageLoadimg(hand);
+      handRecY = canvas.height - handRec.height;
+    }
+
     const img1Width = backgroundRec.width;
     const img1Height = backgroundRec.height;
 
-    // 设置 canvas 的宽度和高度，考虑到旋转后的图片尺寸变化
     canvas.width = img1Width;
     canvas.height = img1Height;
+    handRecY = canvas.height - handRec.height;
 
     const ctx = canvas.getContext("2d");
 
@@ -104,27 +120,43 @@ export function useUploadVertical() {
 
     // 绘制第二张图片
     // 旋转前需要先平移到正确的位置
-    ctx.save();
-    const imgWidth = 795;
-    const imgHeight = 1123.14;
-    const img2X = (canvas.width - imgWidth) / 2;
-    const img2Y = (canvas.height - imgHeight) / 2;
-    ctx.translate(img2X + imgWidth / 2, img2Y + imgHeight / 2);
-    ctx.rotate(rotateAngle);
-    // 因为旋转了，所以需要将图片平移回原位置
-    ctx.drawImage(
-      img,
-      -imgWidth / 2 - 3,
-      -imgHeight / 2 + 55,
-      imgWidth,
-      imgHeight
-    );
-    ctx.restore();
+    if (img.width > img.height) {
+      ctx.save();
+      const imgWidth = 983.05;
+      const imgHeight = 695;
+      const img2X = (canvas.width - imgWidth) / 2;
+      const img2Y = (canvas.height - imgHeight) / 2;
+      ctx.translate(img2X + imgWidth / 2, img2Y + imgHeight / 2);
+      ctx.rotate(rotateAngle);
+      // 因为旋转了，所以需要将图片平移回原位置
+      ctx.drawImage(
+        img,
+        -imgWidth / 2 + 12,
+        -imgHeight / 2 + 200,
+        imgWidth,
+        imgHeight
+      );
+      ctx.restore();
+    } else {
+      ctx.save();
+      const imgWidth = 795;
+      const imgHeight = 1123.14;
+      const img2X = (canvas.width - imgWidth) / 2;
+      const img2Y = (canvas.height - imgHeight) / 2;
+      ctx.translate(img2X + imgWidth / 2, img2Y + imgHeight / 2);
+      ctx.rotate(rotateAngle);
+      // 因为旋转了，所以需要将图片平移回原位置
+      ctx.drawImage(
+        img,
+        -imgWidth / 2 - 3,
+        -imgHeight / 2 + 55,
+        imgWidth,
+        imgHeight
+      );
+      ctx.restore();
+    }
 
-    // 绘制背景2
-    // const handRecX = canvas.width - handRec.width;
-    const handRecY = canvas.height - handRec.height;
-    ctx.drawImage(handRec, 0, handRecY, handRec.width, handRec.height);
+    ctx.drawImage(handRec, handRecX, handRecY, handRec.width, handRec.height);
 
     // 水印
     const shuiYingSrc = await ImageLoadimg(shuiYing);
