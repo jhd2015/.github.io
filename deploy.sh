@@ -4,7 +4,7 @@
 DEPLOY_BRANCH="page"
 
 # 打包项目
-# npm run build
+npm run build:docs
 
 # 切换到部署分支
 git checkout $DEPLOY_BRANCH
