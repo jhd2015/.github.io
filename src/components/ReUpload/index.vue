@@ -97,36 +97,25 @@ const debounceRealTimeCroppered = debounce(mergeImagesVertical, 500);
 //   // });
 // }
 async function mergeImagesVertical() {
-  const list = [];
-  const combineList = [];
   fileList.value.forEach(item => {
-    if (item.response || item.status == "success") {
-      list.push(item);
-    } else {
-      combineList.push(item);
+    if (!["success", "uploading"].includes(item.status)) {
+      item.status = "uploading";
+      getFileReader(item.raw).then(async src => {
+        try {
+          const file = await combineImages(src);
+          const formData = new FormData();
+          formData.append("file", file.raw);
+          const ret = await handUploadApi(formData);
+          ret.file = `${import.meta.env.VITE_APP_BASE_IMG}${ret.file}`;
+          item.response = ret;
+          item.url = ret.file;
+          item.status = "success";
+        } catch (error) {
+          console.log(error);
+          item.status = "fail";
+        }
+      });
     }
-  });
-  combineList.forEach(item => {
-    item.status = "uploading";
-    getFileReader(item.raw).then(async src => {
-      try {
-        const file = await combineImages(src);
-        const formData = new FormData();
-        formData.append("file", file.raw);
-        const ret = await handUploadApi(formData);
-        ret.file = `${import.meta.env.VITE_APP_BASE_IMG}${ret.file}`;
-        file.response = ret;
-        file.url = ret.file;
-        file.status = "success";
-        list.push(file);
-        fileList.value = list;
-      } catch (error) {
-        console.log(error);
-        item.status = "fail";
-        list.push(item);
-        fileList.value = list;
-      }
-    });
   });
 }
 </script>

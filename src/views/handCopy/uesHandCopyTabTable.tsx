@@ -271,7 +271,7 @@ export function uesTabTable(props: any) {
     });
   }
   function handLower(id) {
-    operationApi.upper({ ids: JSON.stringify([id]) }).then(() => {
+    operationApi.lower({ ids: JSON.stringify([id]) }).then(() => {
       ElMessage.success("操作成功");
       loadData();
     });

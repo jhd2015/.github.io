@@ -2,6 +2,7 @@
 import { ref, reactive, watch } from "vue";
 import { handAddApi, handUpdateApi } from "@/api/handCopy";
 import ReUpload from "@/components/ReUpload/index.vue";
+import { ElMessageBox } from "element-plus";
 const dialogVisible = defineModel<boolean>();
 interface Props {
   data: any;
@@ -336,17 +337,24 @@ const options = [
   }
 ];
 
-function handSubmit() {
+async function handSubmit() {
   // ruleForm.value.fileList = [];
   // debugger;
   const data = {
     ...ruleForm.value,
-    img: ruleForm.value.img.map(item => {
-      return item?.response?.file || item.url;
-    })
+    img: ruleForm.value.img
+      ?.filter(item => {
+        if (item.status == "success") {
+          return true;
+        }
+        return false;
+      })
+      .map(item => {
+        return item?.response?.file || item.url;
+      })
   };
   const formData = new FormData();
-
+  let isUploading = false;
   for (const key in data) {
     if (Object.prototype.hasOwnProperty.call(data, key)) {
       if (key == "img") {
@@ -358,6 +366,10 @@ function handSubmit() {
       }
     }
   }
+  if (isUploading && (await confirmPromise())) {
+    return;
+  }
+
   // handAddApi(data);
   if (ruleForm.value?._id) {
     formData.append("id", ruleForm.value._id);
@@ -371,6 +383,20 @@ function handSubmit() {
       emit("refresh");
     });
   }
+}
+function confirmPromise(): Promise<boolean> {
+  return new Promise((resolve, reject) => {
+    ElMessageBox.confirm("图片还没上传完呢", {
+      cancelButtonText: "取消",
+      confirmButtonText: "强上"
+    })
+      .then(() => {
+        resolve(false);
+      })
+      .catch(() => {
+        resolve(true);
+      });
+  });
 }
 </script>
 

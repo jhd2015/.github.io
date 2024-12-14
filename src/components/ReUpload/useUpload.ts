@@ -3,7 +3,7 @@ import background from "@/assets/heCheng/background.png";
 import background2 from "@/assets/heCheng/background2.png";
 import hand from "@/assets/heCheng/hand.png";
 import hand2 from "@/assets/heCheng/hand2.png";
-
+const compress = 4;
 export function useUpload() {
   async function combineImages(img1, img2): Promise<any> {
     const canvas = document.createElement("canvas");
@@ -88,6 +88,7 @@ export function useUpload() {
 export function useUploadVertical() {
   async function combineImages(img: HTMLImageElement): Promise<any> {
     const canvas = document.createElement("canvas");
+
     let backgroundRec: HTMLImageElement;
     let rotateAngle = (-11.7 * Math.PI) / 180; // 将角度转换为弧度
     let handRec: HTMLImageElement;
@@ -106,12 +107,12 @@ export function useUploadVertical() {
       handRecY = canvas.height - handRec.height;
     }
 
-    const img1Width = backgroundRec.width;
-    const img1Height = backgroundRec.height;
+    const img1Width = backgroundRec.width / compress;
+    const img1Height = backgroundRec.height / compress;
 
     canvas.width = img1Width;
     canvas.height = img1Height;
-    handRecY = canvas.height - handRec.height;
+    handRecY = canvas.height - handRec.height / compress;
 
     const ctx = canvas.getContext("2d");
 
@@ -122,8 +123,8 @@ export function useUploadVertical() {
     // 旋转前需要先平移到正确的位置
     if (img.width > img.height) {
       ctx.save();
-      const imgWidth = 983.05;
-      const imgHeight = 695;
+      const imgWidth = 983.05 / compress;
+      const imgHeight = 695 / compress;
       const img2X = (canvas.width - imgWidth) / 2;
       const img2Y = (canvas.height - imgHeight) / 2;
       ctx.translate(img2X + imgWidth / 2, img2Y + imgHeight / 2);
@@ -131,16 +132,16 @@ export function useUploadVertical() {
       // 因为旋转了，所以需要将图片平移回原位置
       ctx.drawImage(
         img,
-        -imgWidth / 2 + 12,
-        -imgHeight / 2 + 200,
+        -imgWidth / 2 + 12 / compress,
+        -imgHeight / 2 + 200 / compress,
         imgWidth,
         imgHeight
       );
       ctx.restore();
     } else {
       ctx.save();
-      const imgWidth = 795;
-      const imgHeight = 1123.14;
+      const imgWidth = 795 / compress;
+      const imgHeight = 1123.14 / compress;
       const img2X = (canvas.width - imgWidth) / 2;
       const img2Y = (canvas.height - imgHeight) / 2;
       ctx.translate(img2X + imgWidth / 2, img2Y + imgHeight / 2);
@@ -148,15 +149,21 @@ export function useUploadVertical() {
       // 因为旋转了，所以需要将图片平移回原位置
       ctx.drawImage(
         img,
-        -imgWidth / 2 - 3,
-        -imgHeight / 2 + 55,
+        -imgWidth / 2 - 3 / compress,
+        -imgHeight / 2 + 55 / compress,
         imgWidth,
         imgHeight
       );
       ctx.restore();
     }
 
-    ctx.drawImage(handRec, handRecX, handRecY, handRec.width, handRec.height);
+    ctx.drawImage(
+      handRec,
+      handRecX,
+      handRecY,
+      handRec.width / compress,
+      handRec.height / compress
+    );
 
     // 水印
     const shuiYingSrc = await ImageLoadimg(shuiYing);
@@ -166,11 +173,13 @@ export function useUploadVertical() {
       canvasHeight: canvas.height
     });
 
+    // canvas.width = img1Width / 2;
+    // canvas.height = img1Height / 2;
     // 将画布内容转换为 Blob
     return new Promise(resolve => {
       canvas.toBlob(
         blob => {
-          const newFile = new File([blob], "merged-image.png", {
+          const newFile = new File([blob], Date.now() + ".png", {
             type: "image/png",
             lastModified: Date.now()
           });
@@ -178,7 +187,7 @@ export function useUploadVertical() {
           resolve({ raw: newFile, url: URL.createObjectURL(blob) });
         },
         "image/png",
-        0.5
+        0.2
       );
     });
   }
@@ -213,10 +222,10 @@ export function ImageLoadimg(src): Promise<HTMLImageElement> {
 }
 // 水印方法
 export function watermark(watermarkImg, { ctx, canvasWidth, canvasHeight }) {
-  const spacingX = 100; // 水印在 X 轴上的间隔
-  const spacingY = 100; // 水印在 Y 轴上的间隔
-  const watermarkWidth = watermarkImg.width;
-  const watermarkHeight = watermarkImg.height;
+  const spacingX = 100 / compress; // 水印在 X 轴上的间隔
+  const spacingY = 100 / compress; // 水印在 Y 轴上的间隔
+  const watermarkWidth = watermarkImg.width / compress;
+  const watermarkHeight = watermarkImg.height / compress;
 
   // 计算水印的数量
   const numWatermarksX = Math.ceil(canvasWidth / (watermarkWidth + spacingX));
@@ -227,9 +236,9 @@ export function watermark(watermarkImg, { ctx, canvasWidth, canvasHeight }) {
     for (let j = 0; j < numWatermarksY; j++) {
       const x = i * (watermarkWidth + spacingX);
       const y = j * (watermarkHeight + spacingY);
-      ctx.globalAlpha = 0.5; // 设置水印透明度
+      // ctx.globalAlpha = 0.5; // 设置水印透明度
       ctx.drawImage(watermarkImg, x, y, watermarkWidth, watermarkHeight);
-      ctx.globalAlpha = 1.0; // 恢复默认透明度
+      // ctx.globalAlpha = 1.0; // 恢复默认透明度
     }
   }
 }
