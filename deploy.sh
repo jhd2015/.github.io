@@ -15,23 +15,26 @@ git stash push -u
 # 切换到部署分支
 git checkout $DEPLOY_BRANCH
 
-# 强行应用暂存的更改
-git stash apply --index --quiet
-
-# 提交更改
-git commit -m "Deploy build at $(date '+%Y-%m-%d %H:%M:%S')"
-
-# 推送到远程仓库
-git push origin $DEPLOY_BRANCH
+# 尝试合并暂存的更改
+if git merge --no-commit --no-ff stash^{/}; then
+    # 如果没有冲突，则提交更改
+    git commit -m "Deploy build at $(date '+%Y-%m-%d %H:%M:%S')"
+    # 推送到远程仓库
+    git push origin $DEPLOY_BRANCH
+else
+    # 如果有冲突，尝试自动解决，保留 stash 中的更改
+    echo "Attempting to resolve conflicts by keeping stash changes..."
+    git checkout stash^{/} -- .
+    git add -A
+    git commit -m "Resolved conflicts by keeping stash changes"
+    git push origin $DEPLOY_BRANCH
+fi
 
 # 切换回原分支
 git checkout -
 
-# 丢弃工作目录中的所有更改
-git reset --hard
-
-# 强行应用原分支的暂存更改
-git stash pop --index --quiet
+# 应用原分支的暂存更改
+git stash pop --index
 
 # 可以选择删除 dist 目录
 # rm -rf dist
