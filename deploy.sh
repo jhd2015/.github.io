@@ -19,7 +19,7 @@ CURRENT_BRANCH=$(git symbolic-ref --short HEAD)
 git checkout $DEPLOY_BRANCH
 
 # 应用暂存的更改
-git commit -m "Deploy build at $(date '+%Y-%m-%d %H:%M:%S')"
+git commit -m "fix: Deploy build at $(date '+%Y-%m-%d %H:%M:%S')"
 
 # 推送到远程仓库
 git push origin $DEPLOY_BRANCH
