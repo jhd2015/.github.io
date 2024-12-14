@@ -15,8 +15,8 @@ git stash push -u
 # 切换到部署分支
 git checkout $DEPLOY_BRANCH
 
-# 应用暂存的更改
-git stash apply
+# 强行应用暂存的更改
+git stash apply --index --quiet
 
 # 提交更改
 git commit -m "Deploy build at $(date '+%Y-%m-%d %H:%M:%S')"
@@ -27,8 +27,11 @@ git push origin $DEPLOY_BRANCH
 # 切换回原分支
 git checkout -
 
-# 应用原分支的暂存更改
-git stash pop
+# 丢弃工作目录中的所有更改
+git reset --hard
+
+# 强行应用原分支的暂存更改
+git stash pop --index --quiet
 
 # 可以选择删除 dist 目录
 # rm -rf dist
