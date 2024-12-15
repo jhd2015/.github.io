@@ -160,7 +160,7 @@ async function mergeImagesVertical() {
               </el-icon>
             </div>
             <span class="el-upload-list__item-actions">
-              <span
+              <!-- <span
                 class="el-upload-list__item-actions-preview"
                 :style="{
                   color: (file as any).check
@@ -170,7 +170,7 @@ async function mergeImagesVertical() {
                 @click="handlePictureCardSelect(index)"
               >
                 <el-icon><Select /></el-icon>
-              </span>
+              </span> -->
               <span
                 class="el-upload-list__item-preview"
                 @click="handlePictureCardPreview(index)"

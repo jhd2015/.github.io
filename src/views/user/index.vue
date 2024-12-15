@@ -95,7 +95,7 @@ function handEdit(data) {
       </div>
     </el-popover>
   </div>
-  <DialogForm v-model="dialogVisible" />
+  <DialogForm v-model="dialogVisible" :data="{}" />
 </template>
 <style lang="scss" scoped>
 .flex {

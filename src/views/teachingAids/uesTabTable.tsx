@@ -100,7 +100,7 @@ export function uesTabTable(props: any) {
     title: ""
   });
   if (props.isStarCoin) {
-    searchModel.value.starCoin = 0;
+    searchModel.value.starCoin = "0";
   }
   function loadData() {
     tableData.value.isLoading = true;
@@ -112,16 +112,7 @@ export function uesTabTable(props: any) {
     }
     materialListApi(data)
       .then(list => {
-        tableData.value.list = list.map(item => {
-          if (typeof item.img === "string") {
-            // const array = item.img
-            //   .match(/'([^']+)'/g)
-            //   .map(item => item.slice(1, -1));
-            // console.log(array);
-            item.img = item.img.split(",");
-          }
-          return item;
-        });
+        tableData.value.list = list;
       })
       .finally(() => {
         tableData.value.isLoading = false;

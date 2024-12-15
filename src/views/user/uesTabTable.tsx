@@ -37,42 +37,27 @@ export function uesTabTable() {
       width: 150
     },
     {
-      label: "昵称",
-      prop: "name"
-    },
-    {
-      label: "会员",
-      prop: "name"
-    },
-
-    {
-      label: "会员时间",
-      prop: "name",
-      width: 300
-    },
-    {
       label: "状态",
       prop: "state",
       slot: "state"
     },
     {
       label: "星币",
-      prop: "name"
+      prop: "myCoin"
     },
     {
       label: "链接数",
       prop: "likes",
       cellRenderer({ row }: any) {
-        return row?.likes?.length;
+        return row?.buysMaterial?.length + row?.likesMaterial?.length;
       }
     },
     {
       label: "创建时间",
-      prop: "date"
-    },
-    {
-      label: "ip地址",
-      prop: "name"
+      prop: "date",
+      cellRenderer({ row }: any) {
+        return row?.date?.slice(0, 10);
+      }
     },
     {
       label: "操作",

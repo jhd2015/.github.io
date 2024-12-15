@@ -336,10 +336,11 @@ const options = [
     ]
   }
 ];
-
+const loadingSubmit = ref(false);
 async function handSubmit() {
   // ruleForm.value.fileList = [];
-  // debugger;
+  // debugger;\
+  loadingSubmit.value = true;
   const data = {
     ...ruleForm.value,
     img: ruleForm.value.img
@@ -367,21 +368,30 @@ async function handSubmit() {
     }
   }
   if (isUploading && (await confirmPromise())) {
+    loadingSubmit.value = false;
     return;
   }
 
   // handAddApi(data);
   if (ruleForm.value?._id) {
     formData.append("id", ruleForm.value._id);
-    handUpdateApi(formData).then(() => {
-      dialogVisible.value = false;
-      emit("refresh");
-    });
+    handUpdateApi(formData)
+      .then(() => {
+        dialogVisible.value = false;
+        emit("refresh");
+      })
+      .finally(() => {
+        loadingSubmit.value = false;
+      });
   } else {
-    handAddApi(formData).then(() => {
-      dialogVisible.value = false;
-      emit("refresh");
-    });
+    handAddApi(formData)
+      .then(() => {
+        dialogVisible.value = false;
+        emit("refresh");
+      })
+      .finally(() => {
+        loadingSubmit.value = false;
+      });
   }
 }
 function confirmPromise(): Promise<boolean> {
@@ -460,7 +470,9 @@ function confirmPromise(): Promise<boolean> {
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handSubmit"> 确认 </el-button>
+        <el-button type="primary" :loading="loadingSubmit" @click="handSubmit">
+          确认
+        </el-button>
       </div>
     </template>
   </el-dialog>

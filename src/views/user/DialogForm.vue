@@ -3,16 +3,28 @@ import { ref, reactive } from "vue";
 import { uesTabTable } from "./uesTabTable";
 import { useModel } from "vue";
 import dayjs from "dayjs";
+import { userAddApi, userUpdateApi } from "@/api/user";
 const dialogVisible = defineModel<boolean>();
+interface Props {
+  data: any;
+}
+const props = withDefaults(defineProps<Props>(), {
+  data: {
+    _id: "",
+    name: ""
+  }
+});
 function handleClose() {
   dialogVisible.value = false;
 }
+
 const today = dayjs();
 const ruleForm = ref({
+  _id: "",
   name: "",
   textarea: "",
   switch: false,
-  num: 200,
+  num: 0,
   date: [
     today.startOf("day").format("yyyy-MM-dd"),
     today.add(1, "year").startOf("day").format("yyyy-MM-dd")
@@ -22,6 +34,41 @@ const ruleForm = ref({
 const rules = reactive({
   name: [{ required: true, message: "不可以为空" }]
 });
+const emit = defineEmits(["refresh"]);
+const loadingSubmit = ref(false);
+function handSubmit() {
+  loadingSubmit.value = true;
+
+  const data = {
+    ...ruleForm.value
+  };
+  const formData = new FormData();
+  for (const key in data) {
+    if (Object.prototype.hasOwnProperty.call(data, key)) {
+      formData.append(key, data[key]);
+    }
+  }
+  if (ruleForm.value?._id) {
+    formData.append("id", ruleForm.value._id);
+    userUpdateApi(formData)
+      .then(() => {
+        dialogVisible.value = false;
+        emit("refresh");
+      })
+      .finally(() => {
+        loadingSubmit.value = false;
+      });
+  } else {
+    userAddApi(formData)
+      .then(() => {
+        dialogVisible.value = false;
+        emit("refresh");
+      })
+      .finally(() => {
+        loadingSubmit.value = false;
+      });
+  }
+}
 </script>
 
 <template>
@@ -59,7 +106,7 @@ const rules = reactive({
           end-placeholder="End date"
         />
       </el-form-item>
-      <el-form-item label="星币" prop="name">
+      <el-form-item label="星币" prop="num">
         <el-input-number
           v-model="ruleForm.num"
           :min="0"
@@ -67,13 +114,13 @@ const rules = reactive({
         />
       </el-form-item>
     </el-form>
-    <!-- <template #footer>
+    <template #footer>
       <div class="dialog-footer">
-        <el-button @click="dialogVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="dialogVisible = false">
-          Confirm
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" :loading="loadingSubmit" @click="handSubmit">
+          确认
         </el-button>
       </div>
-    </template> -->
+    </template>
   </el-dialog>
 </template>

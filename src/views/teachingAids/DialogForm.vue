@@ -72,276 +72,11 @@ const rules = reactive({
   ],
   baiduLink: [{ required: true, message: "不可以为空" }]
 });
-const options = [
-  {
-    value: "guide",
-    label: "Guide",
-    children: [
-      {
-        value: "disciplines",
-        label: "Disciplines",
-        children: [
-          {
-            value: "consistency",
-            label: "Consistency"
-          },
-          {
-            value: "feedback",
-            label: "Feedback"
-          },
-          {
-            value: "efficiency",
-            label: "Efficiency"
-          },
-          {
-            value: "controllability",
-            label: "Controllability"
-          }
-        ]
-      },
-      {
-        value: "navigation",
-        label: "Navigation",
-        children: [
-          {
-            value: "side nav",
-            label: "Side Navigation"
-          },
-          {
-            value: "top nav",
-            label: "Top Navigation"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    value: "component",
-    label: "Component",
-    children: [
-      {
-        value: "basic",
-        label: "Basic",
-        children: [
-          {
-            value: "layout",
-            label: "Layout"
-          },
-          {
-            value: "color",
-            label: "Color"
-          },
-          {
-            value: "typography",
-            label: "Typography"
-          },
-          {
-            value: "icon",
-            label: "Icon"
-          },
-          {
-            value: "button",
-            label: "Button"
-          }
-        ]
-      },
-      {
-        value: "form",
-        label: "Form",
-        children: [
-          {
-            value: "radio",
-            label: "Radio"
-          },
-          {
-            value: "checkbox",
-            label: "Checkbox"
-          },
-          {
-            value: "input",
-            label: "Input"
-          },
-          {
-            value: "input-number",
-            label: "InputNumber"
-          },
-          {
-            value: "select",
-            label: "Select"
-          },
-          {
-            value: "cascader",
-            label: "Cascader"
-          },
-          {
-            value: "switch",
-            label: "Switch"
-          },
-          {
-            value: "slider",
-            label: "Slider"
-          },
-          {
-            value: "time-picker",
-            label: "TimePicker"
-          },
-          {
-            value: "date-picker",
-            label: "DatePicker"
-          },
-          {
-            value: "datetime-picker",
-            label: "DateTimePicker"
-          },
-          {
-            value: "upload",
-            label: "Upload"
-          },
-          {
-            value: "rate",
-            label: "Rate"
-          },
-          {
-            value: "form",
-            label: "Form"
-          }
-        ]
-      },
-      {
-        value: "data",
-        label: "Data",
-        children: [
-          {
-            value: "table",
-            label: "Table"
-          },
-          {
-            value: "tag",
-            label: "Tag"
-          },
-          {
-            value: "progress",
-            label: "Progress"
-          },
-          {
-            value: "tree",
-            label: "Tree"
-          },
-          {
-            value: "pagination",
-            label: "Pagination"
-          },
-          {
-            value: "badge",
-            label: "Badge"
-          }
-        ]
-      },
-      {
-        value: "notice",
-        label: "Notice",
-        children: [
-          {
-            value: "alert",
-            label: "Alert"
-          },
-          {
-            value: "loading",
-            label: "Loading"
-          },
-          {
-            value: "message",
-            label: "Message"
-          },
-          {
-            value: "message-box",
-            label: "MessageBox"
-          },
-          {
-            value: "notification",
-            label: "Notification"
-          }
-        ]
-      },
-      {
-        value: "navigation",
-        label: "Navigation",
-        children: [
-          {
-            value: "menu",
-            label: "Menu"
-          },
-          {
-            value: "tabs",
-            label: "Tabs"
-          },
-          {
-            value: "breadcrumb",
-            label: "Breadcrumb"
-          },
-          {
-            value: "dropdown",
-            label: "Dropdown"
-          },
-          {
-            value: "steps",
-            label: "Steps"
-          }
-        ]
-      },
-      {
-        value: "others",
-        label: "Others",
-        children: [
-          {
-            value: "dialog",
-            label: "Dialog"
-          },
-          {
-            value: "tooltip",
-            label: "Tooltip"
-          },
-          {
-            value: "popover",
-            label: "Popover"
-          },
-          {
-            value: "card",
-            label: "Card"
-          },
-          {
-            value: "carousel",
-            label: "Carousel"
-          },
-          {
-            value: "collapse",
-            label: "Collapse"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    value: "resource",
-    label: "Resource",
-    children: [
-      {
-        value: "axure",
-        label: "Axure Components"
-      },
-      {
-        value: "sketch",
-        label: "Sketch Templates"
-      },
-      {
-        value: "docs",
-        label: "Design Documentation"
-      }
-    ]
-  }
-];
 
+const loadingSubmit = ref(false);
 function handSubmit() {
+  loadingSubmit.value = true;
+
   const data = {
     ...ruleForm.value,
     img: ruleForm.value.img.map(item => {
@@ -362,15 +97,23 @@ function handSubmit() {
   }
   if (ruleForm.value?._id) {
     formData.append("id", ruleForm.value._id);
-    materialUpdateApi(formData).then(() => {
-      dialogVisible.value = false;
-      emit("refresh");
-    });
+    materialUpdateApi(formData)
+      .then(() => {
+        dialogVisible.value = false;
+        emit("refresh");
+      })
+      .finally(() => {
+        loadingSubmit.value = false;
+      });
   } else {
-    materialAddApi(formData).then(() => {
-      dialogVisible.value = false;
-      emit("refresh");
-    });
+    materialAddApi(formData)
+      .then(() => {
+        dialogVisible.value = false;
+        emit("refresh");
+      })
+      .finally(() => {
+        loadingSubmit.value = false;
+      });
   }
 }
 function headPDupload(data: any) {
@@ -453,7 +196,9 @@ function headPDupload(data: any) {
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handSubmit"> 确认 </el-button>
+        <el-button type="primary" :loading="loadingSubmit" @click="handSubmit">
+          确认
+        </el-button>
       </div>
     </template>
   </el-dialog>

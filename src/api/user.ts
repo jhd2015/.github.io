@@ -94,6 +94,12 @@ export const getMine = (data?: any) => {
 export const getUserList = (data?: any) => {
   return http.request<any>("get", "/user/list", { data });
 };
+export const userAddApi = data => {
+  return http.request<any>("post", "/user/add", { data });
+};
+export const userUpdateApi = data => {
+  return http.request<any>("post", "/user/update", { data });
+};
 
 /** 账户设置-个人安全日志 */
 export const getMineLogs = (data?: object) => {

@@ -3,7 +3,7 @@ import background from "@/assets/heCheng/background.png";
 import background2 from "@/assets/heCheng/background2.png";
 import hand from "@/assets/heCheng/hand.png";
 import hand2 from "@/assets/heCheng/hand2.png";
-const compress = 4;
+const compress = 2;
 export function useUpload() {
   async function combineImages(img1, img2): Promise<any> {
     const canvas = document.createElement("canvas");
@@ -187,7 +187,7 @@ export function useUploadVertical() {
           resolve({ raw: newFile, url: URL.createObjectURL(blob) });
         },
         "image/png",
-        0.2
+        1
       );
     });
   }
