@@ -1,8 +1,13 @@
 <script setup lang="ts">
-import { ref, reactive, watch } from "vue";
+import { ref, reactive, watch, nextTick } from "vue";
 import PDupload from "@/components/ReUpload/PDupload.vue";
 import ReUpload from "@/components/ReUpload/index.vue";
-import { materialAddApi, materialUpdateApi } from "@/api/teachingAids";
+import {
+  getCategoriesApi,
+  materialAddApi,
+  materialUpdateApi
+} from "@/api/teachingAids";
+import { onMounted } from "vue";
 
 const dialogVisible = defineModel<boolean>();
 
@@ -18,7 +23,8 @@ const props = withDefaults(defineProps<Props>(), {
     type3: "",
     baiduLink: "",
     img: [],
-    starCoin: 0
+    starCoin: 0,
+    typeList: []
   }
 });
 function handleClose() {
@@ -33,6 +39,7 @@ const ruleForm = ref<{
   baiduLink: string;
   img: any[];
   starCoin: number;
+  typeList?: string[];
 }>({
   title: "",
   type1: "",
@@ -40,29 +47,41 @@ const ruleForm = ref<{
   type3: "",
   baiduLink: "",
   img: [],
-  starCoin: 0
+  starCoin: 0,
+  typeList: []
 });
 watch(
   () => dialogVisible.value,
   () => {
-    ruleForm.value = {
-      ...props.data,
-      starCoin: Number(props.data.starCoin || 0),
-      img: props.data.img?.map(item => {
-        return {
-          url: item,
-          status: "success"
-        };
-      })
-    };
+    nextTick(() => {
+      ruleForm.value = {
+        ...props.data,
+        starCoin: Number(props.data.starCoin || 0),
+        typeList: [props.data.type1, props.data.type2, props.data.type3].filter(
+          item => item
+        ),
+        img: props.data.img?.map(item => {
+          return {
+            url: item,
+            status: "success"
+          };
+        })
+      };
+      ruleFormRef.value.resetFields();
+    });
   }
 );
 const emit = defineEmits(["refresh"]);
-const rules = reactive({
+const rules = reactive<any>({
   title: [{ required: true, message: "不可以为空" }],
-  type1: [{ required: true, message: "不可以为空" }],
-  type2: [{ required: true, message: "不可以为空" }],
-  type3: [{ required: true, message: "不可以为空" }],
+  typeList: [
+    {
+      required: true,
+      message: "不可以为空",
+      trigger: "change",
+      type: "array"
+    }
+  ],
   img: [
     {
       required: true,
@@ -74,12 +93,20 @@ const rules = reactive({
 });
 
 const loadingSubmit = ref(false);
-function handSubmit() {
+const ruleFormRef = ref();
+async function handSubmit() {
+  const is = await ruleFormRef.value.validate();
+  if (!is) {
+    return;
+  }
   loadingSubmit.value = true;
-
+  const [type1, type2, type3] = ruleForm.value.typeList;
   const data = {
     ...ruleForm.value,
-    img: ruleForm.value.img.map(item => {
+    type1,
+    type2,
+    type3,
+    img: ruleForm.value?.img.map(item => {
       return item?.response?.file || item.url;
     })
   };
@@ -120,6 +147,29 @@ function headPDupload(data: any) {
   ruleForm.value.title = data.name;
   ruleForm.value.img = data.list;
 }
+const options = ref<any>([]);
+onMounted(() => {
+  getCategoriesApi().then(res => {
+    options.value = res.map(item => {
+      return {
+        value: item.type1,
+        label: item.type1,
+        children: item.type2.map(item => {
+          return {
+            value: item.type2,
+            label: item.type2,
+            children: item.type3.map(item => {
+              return {
+                value: item.type3,
+                label: item.type3
+              };
+            })
+          };
+        })
+      };
+    });
+  });
+});
 </script>
 
 <template>
@@ -150,8 +200,15 @@ function headPDupload(data: any) {
       <el-form-item label="标题" prop="title">
         <el-input v-model="ruleForm.title" placeholder="请输入" />
       </el-form-item>
+      <el-form-item label="年级-学科-类目" prop="typeList">
+        <el-cascader
+          v-model="ruleForm.typeList"
+          style="width: 100%"
+          :options="options"
+        />
+      </el-form-item>
 
-      <el-row :gutter="20">
+      <!-- <el-row :gutter="20">
         <el-col :span="8">
           <el-form-item label="年级" prop="type1">
             <el-input v-model="ruleForm.type1" placeholder="请输入" />
@@ -167,7 +224,7 @@ function headPDupload(data: any) {
             <el-input v-model="ruleForm.type3" placeholder="请输入" />
           </el-form-item>
         </el-col>
-      </el-row>
+      </el-row> -->
 
       <!-- <el-form-item label="分类" prop="name">
         <el-cascader

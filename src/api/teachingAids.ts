@@ -13,7 +13,9 @@ export const materialDeleteApi = data => {
 export const materialUpdateApi = data => {
   return http.request<any>("post", "/material/update", { data });
 };
-
+export const getCategoriesApi = () => {
+  return http.request<any>("get", "/material/categories");
+};
 export const materialUploadApi = data => {
   return http.request<any>(
     "post",

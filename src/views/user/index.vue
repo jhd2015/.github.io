@@ -49,7 +49,7 @@ function handEdit(data) {
           placeholder="请输入"
         />
 
-        <el-button type="primary" @click="dialogVisible = true">新增</el-button>
+        <!-- <el-button type="primary" @click="dialogVisible = true">新增</el-button> -->
       </div>
     </div>
     <pure-table
@@ -95,7 +95,7 @@ function handEdit(data) {
       </div>
     </el-popover>
   </div>
-  <DialogForm v-model="dialogVisible" :data="{}" />
+  <DialogForm v-model="dialogVisible" :data="dialogDtata" />
 </template>
 <style lang="scss" scoped>
 .flex {

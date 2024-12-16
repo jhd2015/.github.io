@@ -42,8 +42,8 @@ function handEdit(data) {
   dialogDtata.value = data;
 }
 function handAdd() {
-  dialogVisible.value = true;
   dialogDtata.value = {};
+  dialogVisible.value = true;
 }
 onMounted(() => {
   loadData();

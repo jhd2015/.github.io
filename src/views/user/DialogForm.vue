@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, reactive } from "vue";
+import { ref, reactive, nextTick, watch } from "vue";
 import { uesTabTable } from "./uesTabTable";
 import { useModel } from "vue";
 import dayjs from "dayjs";
-import { userAddApi, userUpdateApi } from "@/api/user";
+import { userAddApi, userUpdateApi, userCoinAddApi } from "@/api/user";
 const dialogVisible = defineModel<boolean>();
 interface Props {
   data: any;
@@ -20,23 +20,41 @@ function handleClose() {
 
 const today = dayjs();
 const ruleForm = ref({
-  _id: "",
+  id: "",
   name: "",
-  textarea: "",
-  switch: false,
-  num: 0,
-  date: [
-    today.startOf("day").format("yyyy-MM-dd"),
-    today.add(1, "year").startOf("day").format("yyyy-MM-dd")
-  ]
+  coin: 0
+  // textarea: "",
+  // switch: false,
+  // num: 0,
+  // date: [
+  //   today.startOf("day").format("yyyy-MM-dd"),
+  //   today.add(1, "year").startOf("day").format("yyyy-MM-dd")
+  // ]
 });
+watch(
+  () => dialogVisible.value,
+  () => {
+    nextTick(() => {
+      ruleForm.value = {
+        ...props.data,
+        name: props.data.phone_info.phoneNumber,
+        id: props.data._id,
+        coin: 0
+      };
+      ruleFormRef.value.resetFields();
+    });
+  }
+);
 
-const rules = reactive({
-  name: [{ required: true, message: "不可以为空" }]
-});
+const rules = reactive({});
 const emit = defineEmits(["refresh"]);
 const loadingSubmit = ref(false);
-function handSubmit() {
+const ruleFormRef = ref();
+async function handSubmit() {
+  // const is = await ruleFormRef.value.validate();
+  // if (is) {
+  //   return;
+  // }
   loadingSubmit.value = true;
 
   const data = {
@@ -48,33 +66,41 @@ function handSubmit() {
       formData.append(key, data[key]);
     }
   }
-  if (ruleForm.value?._id) {
-    formData.append("id", ruleForm.value._id);
-    userUpdateApi(formData)
-      .then(() => {
-        dialogVisible.value = false;
-        emit("refresh");
-      })
-      .finally(() => {
-        loadingSubmit.value = false;
-      });
-  } else {
-    userAddApi(formData)
-      .then(() => {
-        dialogVisible.value = false;
-        emit("refresh");
-      })
-      .finally(() => {
-        loadingSubmit.value = false;
-      });
-  }
+  userCoinAddApi(formData)
+    .then(() => {
+      dialogVisible.value = false;
+      emit("refresh");
+    })
+    .finally(() => {
+      loadingSubmit.value = false;
+    });
+  // if (ruleForm.value?._id) {
+  //   formData.append("id", ruleForm.value._id);
+  //   userUpdateApi(formData)
+  //     .then(() => {
+  //       dialogVisible.value = false;
+  //       emit("refresh");
+  //     })
+  //     .finally(() => {
+  //       loadingSubmit.value = false;
+  //     });
+  // } else {
+  //   userAddApi(formData)
+  //     .then(() => {
+  //       dialogVisible.value = false;
+  //       emit("refresh");
+  //     })
+  //     .finally(() => {
+  //       loadingSubmit.value = false;
+  //     });
+  // }
 }
 </script>
 
 <template>
   <el-dialog
     v-model="dialogVisible"
-    title="新增手抄报"
+    title="添加星币"
     width="500"
     :before-close="handleClose"
   >
@@ -87,14 +113,11 @@ function handSubmit() {
       class="demo-ruleForm"
       status-icon
     >
-      <el-form-item label="手机号" prop="name">
-        <el-input v-model="ruleForm.name" placeholder="请输入" />
-      </el-form-item>
       <el-form-item label="昵称" prop="name">
         <el-input v-model="ruleForm.name" placeholder="请输入" />
       </el-form-item>
 
-      <el-form-item label="是否开会员" prop="switch">
+      <!-- <el-form-item label="是否开会员" prop="switch">
         <el-switch v-model="ruleForm.switch" />
       </el-form-item>
       <el-form-item v-if="ruleForm.switch" label="会员时间" prop="switch">
@@ -105,10 +128,10 @@ function handSubmit() {
           start-placeholder="Start date"
           end-placeholder="End date"
         />
-      </el-form-item>
-      <el-form-item label="星币" prop="num">
+      </el-form-item> -->
+      <el-form-item label="星币" prop="coin">
         <el-input-number
-          v-model="ruleForm.num"
+          v-model="ruleForm.coin"
           :min="0"
           controls-position="right"
         />

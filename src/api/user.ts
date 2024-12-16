@@ -101,6 +101,10 @@ export const userUpdateApi = data => {
   return http.request<any>("post", "/user/update", { data });
 };
 
+export const userCoinAddApi = data => {
+  return http.request<any>("post", "/coin/add", { data });
+};
+
 /** 账户设置-个人安全日志 */
 export const getMineLogs = (data?: object) => {
   return http.request<ResultTable>("get", "/mine-logs", { data });

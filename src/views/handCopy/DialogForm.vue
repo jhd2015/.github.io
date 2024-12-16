@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, reactive, watch } from "vue";
-import { handAddApi, handUpdateApi } from "@/api/handCopy";
+import { ref, reactive, watch, onMounted, nextTick } from "vue";
+import { getCategoriesApi, handAddApi, handUpdateApi } from "@/api/handCopy";
 import ReUpload from "@/components/ReUpload/index.vue";
 import { ElMessageBox } from "element-plus";
 const dialogVisible = defineModel<boolean>();
@@ -15,7 +15,8 @@ const props = withDefaults(defineProps<Props>(), {
     month: "",
     festival: "",
     baiduLink: "",
-    img: []
+    img: [],
+    monthFestival: []
   }
 });
 const ruleForm = ref<{
@@ -27,6 +28,7 @@ const ruleForm = ref<{
   festival: string;
   baiduLink: string;
   img: any[];
+  monthFestival?: string[];
 }>({
   _id: "",
   starCoin: 0,
@@ -34,21 +36,28 @@ const ruleForm = ref<{
   month: "",
   festival: "",
   baiduLink: "",
-  img: []
+  img: [],
+  monthFestival: []
 });
 watch(
   () => dialogVisible.value,
   () => {
-    ruleForm.value = {
-      ...props.data,
-      starCoin: Number(props.data.starCoin || 0),
-      img: props.data.img?.map(item => {
-        return {
-          url: item,
-          status: "success"
-        };
-      })
-    };
+    nextTick(() => {
+      ruleForm.value = {
+        ...props.data,
+        monthFestival: [props.data.month, props.data.festival].filter(
+          item => item
+        ),
+        starCoin: Number(props.data.starCoin || 0),
+        img: props.data.img?.map(item => {
+          return {
+            url: item,
+            status: "success"
+          };
+        })
+      };
+      ruleFormRef.value.resetFields();
+    });
   }
 );
 const emit = defineEmits(["refresh"]);
@@ -57,292 +66,35 @@ const rules = reactive<any>({
   starCoin: [{ required: true, message: "不可以为空" }],
   title: [{ required: true, message: "不可以为空" }],
   baiduLink: [{ required: true, message: "不可以为空" }],
-  month: [{ required: true, message: "不可以为空" }],
+  monthFestival: [
+    { required: true, message: "不可以为空", type: "array", trigger: "change" }
+  ],
   img: [
     {
       type: "array",
       required: true,
       message: "不可以为空"
     }
-  ],
-  festival: [{ required: true, message: "不可以为空" }]
+  ]
 });
 
-const options = [
-  {
-    value: "guide",
-    label: "Guide",
-    children: [
-      {
-        value: "disciplines",
-        label: "Disciplines",
-        children: [
-          {
-            value: "consistency",
-            label: "Consistency"
-          },
-          {
-            value: "feedback",
-            label: "Feedback"
-          },
-          {
-            value: "efficiency",
-            label: "Efficiency"
-          },
-          {
-            value: "controllability",
-            label: "Controllability"
-          }
-        ]
-      },
-      {
-        value: "navigation",
-        label: "Navigation",
-        children: [
-          {
-            value: "side nav",
-            label: "Side Navigation"
-          },
-          {
-            value: "top nav",
-            label: "Top Navigation"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    value: "component",
-    label: "Component",
-    children: [
-      {
-        value: "basic",
-        label: "Basic",
-        children: [
-          {
-            value: "layout",
-            label: "Layout"
-          },
-          {
-            value: "color",
-            label: "Color"
-          },
-          {
-            value: "typography",
-            label: "Typography"
-          },
-          {
-            value: "icon",
-            label: "Icon"
-          },
-          {
-            value: "button",
-            label: "Button"
-          }
-        ]
-      },
-      {
-        value: "form",
-        label: "Form",
-        children: [
-          {
-            value: "radio",
-            label: "Radio"
-          },
-          {
-            value: "checkbox",
-            label: "Checkbox"
-          },
-          {
-            value: "input",
-            label: "Input"
-          },
-          {
-            value: "input-number",
-            label: "InputNumber"
-          },
-          {
-            value: "select",
-            label: "Select"
-          },
-          {
-            value: "cascader",
-            label: "Cascader"
-          },
-          {
-            value: "switch",
-            label: "Switch"
-          },
-          {
-            value: "slider",
-            label: "Slider"
-          },
-          {
-            value: "time-picker",
-            label: "TimePicker"
-          },
-          {
-            value: "date-picker",
-            label: "DatePicker"
-          },
-          {
-            value: "datetime-picker",
-            label: "DateTimePicker"
-          },
-          {
-            value: "upload",
-            label: "Upload"
-          },
-          {
-            value: "rate",
-            label: "Rate"
-          },
-          {
-            value: "form",
-            label: "Form"
-          }
-        ]
-      },
-      {
-        value: "data",
-        label: "Data",
-        children: [
-          {
-            value: "table",
-            label: "Table"
-          },
-          {
-            value: "tag",
-            label: "Tag"
-          },
-          {
-            value: "progress",
-            label: "Progress"
-          },
-          {
-            value: "tree",
-            label: "Tree"
-          },
-          {
-            value: "pagination",
-            label: "Pagination"
-          },
-          {
-            value: "badge",
-            label: "Badge"
-          }
-        ]
-      },
-      {
-        value: "notice",
-        label: "Notice",
-        children: [
-          {
-            value: "alert",
-            label: "Alert"
-          },
-          {
-            value: "loading",
-            label: "Loading"
-          },
-          {
-            value: "message",
-            label: "Message"
-          },
-          {
-            value: "message-box",
-            label: "MessageBox"
-          },
-          {
-            value: "notification",
-            label: "Notification"
-          }
-        ]
-      },
-      {
-        value: "navigation",
-        label: "Navigation",
-        children: [
-          {
-            value: "menu",
-            label: "Menu"
-          },
-          {
-            value: "tabs",
-            label: "Tabs"
-          },
-          {
-            value: "breadcrumb",
-            label: "Breadcrumb"
-          },
-          {
-            value: "dropdown",
-            label: "Dropdown"
-          },
-          {
-            value: "steps",
-            label: "Steps"
-          }
-        ]
-      },
-      {
-        value: "others",
-        label: "Others",
-        children: [
-          {
-            value: "dialog",
-            label: "Dialog"
-          },
-          {
-            value: "tooltip",
-            label: "Tooltip"
-          },
-          {
-            value: "popover",
-            label: "Popover"
-          },
-          {
-            value: "card",
-            label: "Card"
-          },
-          {
-            value: "carousel",
-            label: "Carousel"
-          },
-          {
-            value: "collapse",
-            label: "Collapse"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    value: "resource",
-    label: "Resource",
-    children: [
-      {
-        value: "axure",
-        label: "Axure Components"
-      },
-      {
-        value: "sketch",
-        label: "Sketch Templates"
-      },
-      {
-        value: "docs",
-        label: "Design Documentation"
-      }
-    ]
-  }
-];
 const loadingSubmit = ref(false);
+const ruleFormRef = ref();
 async function handSubmit() {
+  const is = await ruleFormRef.value.validate();
+  if (is) {
+    return;
+  }
   // ruleForm.value.fileList = [];
   // debugger;\
   loadingSubmit.value = true;
+  const [month, festival] = ruleForm.value.monthFestival;
+
   const data = {
     ...ruleForm.value,
+    monthFestival: undefined,
+    month,
+    festival,
     img: ruleForm.value.img
       ?.filter(item => {
         if (item.status == "success") {
@@ -408,6 +160,24 @@ function confirmPromise(): Promise<boolean> {
       });
   });
 }
+const options = ref<any>([]);
+
+onMounted(() => {
+  getCategoriesApi().then(res => {
+    options.value = res.map(item => {
+      return {
+        value: item.month,
+        label: item.month,
+        children: item.festivals.map(({ festival }) => {
+          return {
+            value: festival,
+            label: festival
+          };
+        })
+      };
+    });
+  });
+});
 </script>
 
 <template>
@@ -440,12 +210,15 @@ function confirmPromise(): Promise<boolean> {
           placeholder="请输入"
         />
       </el-form-item>
-      <el-form-item label="月分" prop="month">
+      <el-form-item label="月分-节曰" prop="monthFestival">
+        <el-cascader v-model="ruleForm.monthFestival" :options="options" />
+      </el-form-item>
+      <!-- <el-form-item label="月分" prop="month">
         <el-input v-model="ruleForm.month" placeholder="请输入" />
       </el-form-item>
       <el-form-item label="节曰" prop="festival">
         <el-input v-model="ruleForm.festival" placeholder="请输入" />
-      </el-form-item>
+      </el-form-item> -->
       <!-- <el-form-item label="分类" prop="festival">
         <el-cascader
           v-model="ruleForm.festival"

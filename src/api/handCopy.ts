@@ -13,6 +13,9 @@ export const handDeleteApi = data => {
 export const handUpdateApi = data => {
   return http.request<any>("post", "/hand/update", { data });
 };
+export const getCategoriesApi = () => {
+  return http.request<any>("get", "/hand/categories");
+};
 
 export const handUploadApi = data => {
   return http.request<any>(
