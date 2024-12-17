@@ -49,7 +49,21 @@ export function uesTabTable() {
       label: "链接数",
       prop: "likes",
       cellRenderer({ row }: any) {
-        return row?.buysMaterial?.length + row?.likesMaterial?.length;
+        return row?.buysMaterial?.length + row?.buys?.length;
+      }
+    },
+    {
+      label: "手抄报点赞",
+      prop: "likes",
+      cellRenderer({ row }: any) {
+        return row?.likes?.length;
+      }
+    },
+    {
+      label: "教辅资料点赞",
+      prop: "likes",
+      cellRenderer({ row }: any) {
+        return row?.likesMaterial?.length;
       }
     },
     {
