@@ -68,7 +68,11 @@ defineOptions({
         <el-button @click="headOperationAll('upper')">批量上架</el-button>
         <el-button @click="headOperationAll('lower')">批量下架</el-button>
         <el-button @click="headOperationAll('delete')">批量删除</el-button>
-        <el-button type="primary" @click="headOperationAll('free')">
+        <el-button
+          v-if="!props.isStarCoin"
+          type="primary"
+          @click="headOperationAll('free')"
+        >
           设置免费
         </el-button>
         <el-button type="primary" @click="handAdd">新增</el-button>

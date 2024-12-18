@@ -82,7 +82,7 @@ const loadingSubmit = ref(false);
 const ruleFormRef = ref();
 async function handSubmit() {
   const is = await ruleFormRef.value.validate();
-  if (is) {
+  if (!is) {
     return;
   }
   // ruleForm.value.fileList = [];
