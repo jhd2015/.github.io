@@ -93,7 +93,8 @@ export function useUploadVertical() {
     let rotateAngle = (-11.7 * Math.PI) / 180; // 将角度转换为弧度
     let handRec: HTMLImageElement;
     let handRecY = 0,
-      handRecX = 0;
+      handRecX = 0,
+      isX = img.width > img.height;
 
     if (img.width > img.height) {
       // 横屏图片
@@ -104,7 +105,6 @@ export function useUploadVertical() {
       // 竖屏图片
       backgroundRec = await ImageLoadimg(background);
       handRec = await ImageLoadimg(hand);
-      handRecY = canvas.height - handRec.height;
     }
 
     const img1Width = backgroundRec.width / compress;
@@ -113,6 +113,9 @@ export function useUploadVertical() {
     canvas.width = img1Width;
     canvas.height = img1Height;
     handRecY = canvas.height - handRec.height / compress;
+    if (isX) {
+      handRecY -= 80;
+    }
 
     const ctx = canvas.getContext("2d");
 
@@ -121,12 +124,12 @@ export function useUploadVertical() {
 
     // 绘制第二张图片
     // 旋转前需要先平移到正确的位置
-    if (img.width > img.height) {
+    if (isX) {
       ctx.save();
       const imgWidth = 983.05 / compress;
       const imgHeight = 695 / compress;
       const img2X = (canvas.width - imgWidth) / 2;
-      const img2Y = (canvas.height - imgHeight) / 2;
+      const img2Y = (canvas.height - imgHeight) / 2 - 80;
       ctx.translate(img2X + imgWidth / 2, img2Y + imgHeight / 2);
       ctx.rotate(rotateAngle);
       // 因为旋转了，所以需要将图片平移回原位置

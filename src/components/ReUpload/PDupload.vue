@@ -70,7 +70,7 @@ const handleFileChange = file => {
 const renderPageAsImage = async (pdf, pageNum) => {
   try {
     const page = await pdf.getPage(pageNum);
-    const viewport = page.getViewport({ scale: 1.5 });
+    const viewport = page.getViewport({ scale: 0.3 });
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
 
