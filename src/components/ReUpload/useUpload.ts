@@ -3,7 +3,7 @@ import background from "@/assets/heCheng/background.png";
 import background2 from "@/assets/heCheng/background2.png";
 import hand from "@/assets/heCheng/hand.png";
 import hand2 from "@/assets/heCheng/hand2.png";
-const compress = 2;
+const compress = 1.5;
 export function useUpload() {
   async function combineImages(img1, img2): Promise<any> {
     const canvas = document.createElement("canvas");
