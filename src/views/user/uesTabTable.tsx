@@ -46,7 +46,7 @@ export function uesTabTable() {
       prop: "myCoin"
     },
     {
-      label: "链接数",
+      label: "购买数",
       prop: "likes",
       cellRenderer({ row }: any) {
         return row?.buysMaterial?.length + row?.buys?.length;
