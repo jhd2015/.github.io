@@ -180,18 +180,14 @@ export function useUploadVertical() {
     // canvas.height = img1Height / 2;
     // 将画布内容转换为 Blob
     return new Promise(resolve => {
-      canvas.toBlob(
-        blob => {
-          const newFile = new File([blob], Date.now() + ".png", {
-            type: "image/png",
-            lastModified: Date.now()
-          });
-          canvas.remove();
-          resolve({ raw: newFile, url: URL.createObjectURL(blob) });
-        },
-        "image/png",
-        1
-      );
+      canvas.toBlob(blob => {
+        const newFile = new File([blob], Date.now() + ".png", {
+          type: "image/png",
+          lastModified: Date.now()
+        });
+        canvas.remove();
+        resolve({ raw: newFile, url: URL.createObjectURL(blob) });
+      });
     });
   }
 
