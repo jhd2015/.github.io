@@ -4,7 +4,11 @@ import EditDrawer from "@/components/ReUpload/EditDrawer.vue";
 import { ref, nextTick } from "vue";
 import { computed } from "vue";
 import { debounce } from "@pureadmin/utils";
-import { useUploadVertical } from "./useUpload";
+import {
+  ImageLoadimg,
+  compressNnImageTo1MB,
+  useUploadVertical
+} from "./useUpload";
 import { handUploadApi } from "@/api/handCopy";
 interface Props {
   name: string;
@@ -99,24 +103,43 @@ const debounceRealTimeCroppered = debounce(mergeImagesVertical, 500);
 async function mergeImagesVertical() {
   fileList.value.forEach(item => {
     if (!["success", "uploading"].includes(item.status)) {
-      item.status = "uploading";
-      getFileReader(item.raw).then(async src => {
-        try {
-          const file = await combineImages(src);
-          const formData = new FormData();
-          formData.append("file", file.raw);
-          const ret = await handUploadApi(formData);
-          ret.file = `${import.meta.env.VITE_APP_BASE_IMG}${ret.file}`;
-          item.response = ret;
-          item.url = ret.file;
-          item.status = "success";
-        } catch (error) {
-          console.log(error);
-          item.status = "fail";
-        }
-      });
+      imageDom(item);
     }
   });
+}
+
+async function imageDom(item: any) {
+  item.status = "uploading";
+  const m1 = 1 * 1024 * 1024;
+  let src: any;
+  try {
+    // if (item.raw.size > m1) {
+    //   // src = await getFileReader(item.raw);
+    //   item.raw = await compressNnImageTo1MB(item.raw, m1);
+    // }
+    src = await getFileReader(item.raw);
+    const file = await combineImages(src);
+    // debugger;
+    const formData = new FormData();
+    // if (file.raw.size > m1) {
+    //   const blobData: Blob = await compressNnImageTo1MB(file.raw);
+    //   debugger;
+    //   file.raw = new File([blobData], Date.now() + ".png", {
+    //     type: "image/png",
+    //     lastModified: Date.now()
+    //   });
+    // }
+    formData.append("file", file.raw);
+    const ret = await handUploadApi(formData);
+    ret.file = `${import.meta.env.VITE_APP_BASE_IMG}${ret.file}`;
+    item.response = ret;
+    item.url = ret.file;
+    item.url = file.url;
+    item.status = "success";
+  } catch (error) {
+    console.log(error);
+    item.status = "fail";
+  }
 }
 </script>
 

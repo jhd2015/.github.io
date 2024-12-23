@@ -3,7 +3,8 @@ import background from "@/assets/heCheng/background.png";
 import background2 from "@/assets/heCheng/background2.png";
 import hand from "@/assets/heCheng/hand.png";
 import hand2 from "@/assets/heCheng/hand2.png";
-const compress = 1.5;
+
+const compressNn = 1.5;
 export function useUpload() {
   async function combineImages(img1, img2): Promise<any> {
     const canvas = document.createElement("canvas");
@@ -107,12 +108,12 @@ export function useUploadVertical() {
       handRec = await ImageLoadimg(hand);
     }
 
-    const img1Width = backgroundRec.width / compress;
-    const img1Height = backgroundRec.height / compress;
+    const img1Width = backgroundRec.width / compressNn;
+    const img1Height = backgroundRec.height / compressNn;
 
     canvas.width = img1Width;
     canvas.height = img1Height;
-    handRecY = canvas.height - handRec.height / compress;
+    handRecY = canvas.height - handRec.height / compressNn;
     if (isX) {
       handRecY -= 80;
     }
@@ -126,8 +127,8 @@ export function useUploadVertical() {
     // 旋转前需要先平移到正确的位置
     if (isX) {
       ctx.save();
-      const imgWidth = 983.05 / compress;
-      const imgHeight = 695 / compress;
+      const imgWidth = 983.05 / compressNn;
+      const imgHeight = 695 / compressNn;
       const img2X = (canvas.width - imgWidth) / 2;
       const img2Y = (canvas.height - imgHeight) / 2 - 80;
       ctx.translate(img2X + imgWidth / 2, img2Y + imgHeight / 2);
@@ -135,16 +136,16 @@ export function useUploadVertical() {
       // 因为旋转了，所以需要将图片平移回原位置
       ctx.drawImage(
         img,
-        -imgWidth / 2 + 12 / compress,
-        -imgHeight / 2 + 200 / compress,
+        -imgWidth / 2 + 12 / compressNn,
+        -imgHeight / 2 + 200 / compressNn,
         imgWidth,
         imgHeight
       );
       ctx.restore();
     } else {
       ctx.save();
-      const imgWidth = 795 / compress;
-      const imgHeight = 1123.14 / compress;
+      const imgWidth = 795 / compressNn;
+      const imgHeight = 1123.14 / compressNn;
       const img2X = (canvas.width - imgWidth) / 2;
       const img2Y = (canvas.height - imgHeight) / 2;
       ctx.translate(img2X + imgWidth / 2, img2Y + imgHeight / 2);
@@ -152,8 +153,8 @@ export function useUploadVertical() {
       // 因为旋转了，所以需要将图片平移回原位置
       ctx.drawImage(
         img,
-        -imgWidth / 2 - 3 / compress,
-        -imgHeight / 2 + 55 / compress,
+        -imgWidth / 2 - 3 / compressNn,
+        -imgHeight / 2 + 55 / compressNn,
         imgWidth,
         imgHeight
       );
@@ -164,8 +165,8 @@ export function useUploadVertical() {
       handRec,
       handRecX,
       handRecY,
-      handRec.width / compress,
-      handRec.height / compress
+      handRec.width / compressNn,
+      handRec.height / compressNn
     );
 
     // 水印
@@ -180,11 +181,16 @@ export function useUploadVertical() {
     // canvas.height = img1Height / 2;
     // 将画布内容转换为 Blob
     return new Promise(resolve => {
-      canvas.toBlob(blob => {
-        const newFile = new File([blob], Date.now() + ".png", {
+      canvas.toBlob(async blob => {
+        const maxSize = 0.8 * 1024 * 1024;
+
+        let newFile = new File([blob], Date.now() + ".png", {
           type: "image/png",
           lastModified: Date.now()
         });
+        if (newFile.size > maxSize) {
+          newFile = await compressNnImageTo1MB(newFile, maxSize);
+        }
         canvas.remove();
         resolve({ raw: newFile, url: URL.createObjectURL(blob) });
       });
@@ -221,10 +227,10 @@ export function ImageLoadimg(src): Promise<HTMLImageElement> {
 }
 // 水印方法
 export function watermark(watermarkImg, { ctx, canvasWidth, canvasHeight }) {
-  const spacingX = 100 / compress; // 水印在 X 轴上的间隔
-  const spacingY = 100 / compress; // 水印在 Y 轴上的间隔
-  const watermarkWidth = watermarkImg.width / compress;
-  const watermarkHeight = watermarkImg.height / compress;
+  const spacingX = 100 / compressNn; // 水印在 X 轴上的间隔
+  const spacingY = 100 / compressNn; // 水印在 Y 轴上的间隔
+  const watermarkWidth = watermarkImg.width / compressNn;
+  const watermarkHeight = watermarkImg.height / compressNn;
 
   // 计算水印的数量
   const numWatermarksX = Math.ceil(canvasWidth / (watermarkWidth + spacingX));
@@ -240,4 +246,54 @@ export function watermark(watermarkImg, { ctx, canvasWidth, canvasHeight }) {
       // ctx.globalAlpha = 1.0; // 恢复默认透明度
     }
   }
+}
+export function compressNnImageTo1MB(file, maxSize): Promise<File> {
+  return new Promise(resolve => {
+    compressImage(file, maxSize, resolve);
+  });
+}
+function compressImage(file, maxSize, callback) {
+  const reader = new FileReader();
+  reader.onerror = error => {
+    console.error("Error reading file:", error);
+  };
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      // 设置压缩后的宽度和高度
+      let width = img.width / 2;
+      let height = img.height / 2;
+
+      canvas.width = width;
+      canvas.height = height;
+
+      // 绘制压缩后的图片
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // 转换为Blob并检查大小
+      canvas.toBlob(
+        blob => {
+          if (blob.size > maxSize) {
+            console.log(blob.size, maxSize);
+            // 如果压缩后仍然超过大小限制，可以进一步降低质量
+            compressImage(blob, maxSize, callback);
+          } else {
+            // 创建一个新的File对象
+            const compressedFile = new File([blob], file.name, {
+              type: file.type,
+              lastModified: Date.now()
+            });
+            callback(compressedFile);
+          }
+        },
+        file.type,
+        0.8
+      ); // 图片质量为80%
+    };
+    img.src = e.target.result as any;
+  };
+  reader.readAsDataURL(file);
 }
