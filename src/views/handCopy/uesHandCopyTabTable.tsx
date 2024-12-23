@@ -28,7 +28,8 @@ export function uesTabTable(props: any) {
   const searchModel = ref<any>({
     title: "",
     month: "",
-    baiduLink: ""
+    baiduLink: "",
+    pageSize: 999999
   });
   console.log(props);
   if (props.isStarCoin) {

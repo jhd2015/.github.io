@@ -104,7 +104,9 @@ export function uesTabTable(props: any) {
   }
   function loadData() {
     tableData.value.isLoading = true;
-    const data = {};
+    const data = {
+      pageSize: 999999
+    };
     for (let key in searchModel.value) {
       if (searchModel.value[key]) {
         data[key] = searchModel.value[key];
