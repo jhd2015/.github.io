@@ -87,7 +87,10 @@ export function useUpload() {
   };
 }
 export function useUploadVertical() {
-  async function combineImages(img: HTMLImageElement): Promise<any> {
+  async function combineImages(
+    img: HTMLImageElement,
+    compress = compressNn
+  ): Promise<any> {
     const canvas = document.createElement("canvas");
 
     let backgroundRec: HTMLImageElement;
@@ -108,12 +111,12 @@ export function useUploadVertical() {
       handRec = await ImageLoadimg(hand);
     }
 
-    const img1Width = backgroundRec.width / compressNn;
-    const img1Height = backgroundRec.height / compressNn;
+    const img1Width = backgroundRec.width / compress;
+    const img1Height = backgroundRec.height / compress;
 
     canvas.width = img1Width;
     canvas.height = img1Height;
-    handRecY = canvas.height - handRec.height / compressNn;
+    handRecY = canvas.height - handRec.height / compress;
     if (isX) {
       handRecY -= 80;
     }
@@ -127,8 +130,8 @@ export function useUploadVertical() {
     // 旋转前需要先平移到正确的位置
     if (isX) {
       ctx.save();
-      const imgWidth = 983.05 / compressNn;
-      const imgHeight = 695 / compressNn;
+      const imgWidth = 983.05 / compress;
+      const imgHeight = 695 / compress;
       const img2X = (canvas.width - imgWidth) / 2;
       const img2Y = (canvas.height - imgHeight) / 2 - 80;
       ctx.translate(img2X + imgWidth / 2, img2Y + imgHeight / 2);
@@ -136,16 +139,16 @@ export function useUploadVertical() {
       // 因为旋转了，所以需要将图片平移回原位置
       ctx.drawImage(
         img,
-        -imgWidth / 2 + 12 / compressNn,
-        -imgHeight / 2 + 200 / compressNn,
+        -imgWidth / 2 + 12 / compress,
+        -imgHeight / 2 + 200 / compress,
         imgWidth,
         imgHeight
       );
       ctx.restore();
     } else {
       ctx.save();
-      const imgWidth = 795 / compressNn;
-      const imgHeight = 1123.14 / compressNn;
+      const imgWidth = 795 / compress;
+      const imgHeight = 1123.14 / compress;
       const img2X = (canvas.width - imgWidth) / 2;
       const img2Y = (canvas.height - imgHeight) / 2;
       ctx.translate(img2X + imgWidth / 2, img2Y + imgHeight / 2);
@@ -153,8 +156,8 @@ export function useUploadVertical() {
       // 因为旋转了，所以需要将图片平移回原位置
       ctx.drawImage(
         img,
-        -imgWidth / 2 - 3 / compressNn,
-        -imgHeight / 2 + 55 / compressNn,
+        -imgWidth / 2 - 3 / compress,
+        -imgHeight / 2 + 55 / compress,
         imgWidth,
         imgHeight
       );
@@ -165,8 +168,8 @@ export function useUploadVertical() {
       handRec,
       handRecX,
       handRecY,
-      handRec.width / compressNn,
-      handRec.height / compressNn
+      handRec.width / compress,
+      handRec.height / compress
     );
 
     // 水印
@@ -182,7 +185,7 @@ export function useUploadVertical() {
     // 将画布内容转换为 Blob
     return new Promise(resolve => {
       canvas.toBlob(async blob => {
-        const maxSize = 0.8 * 1024 * 1024;
+        const maxSize = (1 * 1024 * 1024) / 2;
 
         let newFile = new File([blob], Date.now() + ".png", {
           type: "image/png",
@@ -264,8 +267,8 @@ function compressImage(file, maxSize, callback) {
       const ctx = canvas.getContext("2d");
 
       // 设置压缩后的宽度和高度
-      let width = img.width / 2;
-      let height = img.height / 2;
+      let width = img.width - 100;
+      let height = img.height - 100;
 
       canvas.width = width;
       canvas.height = height;
@@ -282,7 +285,7 @@ function compressImage(file, maxSize, callback) {
             compressImage(blob, maxSize, callback);
           } else {
             // 创建一个新的File对象
-            const compressedFile = new File([blob], file.name, {
+            let compressedFile = new File([blob], file.name + ".png", {
               type: file.type,
               lastModified: Date.now()
             });

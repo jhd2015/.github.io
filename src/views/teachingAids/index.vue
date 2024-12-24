@@ -20,7 +20,10 @@ const {
   headOperationAll,
   searchModel,
   handUpper,
-  handLower
+  handLower,
+  pagination,
+  onSizeChange,
+  onCurrentChange
 } = uesTabTable(props);
 
 function getData(data) {
@@ -83,7 +86,11 @@ defineOptions({
       :columns="columns"
       :data="tableData.list"
       :loading="tableData.isLoading"
+      adaptive
+      :pagination="pagination"
       @selection-change="handleSelectionChange"
+      @page-size-change="onSizeChange"
+      @page-current-change="onCurrentChange"
     >
       <template #img="{ row }">
         <div v-if="row?.img" class="imgBox">

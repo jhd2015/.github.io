@@ -1,8 +1,9 @@
 import Sortable from "sortablejs";
-import { ref, nextTick } from "vue";
+import { ref, nextTick, reactive } from "vue";
 import { handListApi, operationApi, handDeleteApi } from "@/api/handCopy";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { copyTextToClipboard } from "@/utils";
+import type { PaginationProps } from "@pureadmin/table";
 
 export function uesTabTable(props: any) {
   const rowDrop = (event: { preventDefault: () => void }) => {
@@ -28,16 +29,34 @@ export function uesTabTable(props: any) {
   const searchModel = ref<any>({
     title: "",
     month: "",
-    baiduLink: "",
-    pageSize: 999999
+    baiduLink: ""
   });
-  console.log(props);
+
+  const pagination = reactive<PaginationProps>({
+    pageSize: 20,
+    currentPage: 1,
+    pageSizes: [20, 40, 60],
+    total: 0,
+    align: "right",
+    background: true,
+    size: "default"
+  });
+  function onSizeChange() {
+    loadData();
+  }
+  function onCurrentChange() {
+    loadData();
+  }
   if (props.isStarCoin) {
     searchModel.value.starCoin = "0";
   }
   function loadData() {
     tableData.value.isLoading = true;
-    const data = {};
+    const data = {
+      pageSize: pagination.pageSize,
+      pageNum: pagination.currentPage
+    };
+
     for (let key in searchModel.value) {
       if (searchModel.value[key]) {
         data[key] = searchModel.value[key];
@@ -45,8 +64,9 @@ export function uesTabTable(props: any) {
     }
 
     handListApi(data)
-      .then(list => {
-        tableData.value.list = list;
+      .then(res => {
+        tableData.value.list = res.list;
+        pagination.total = res.total;
       })
       .finally(() => {
         tableData.value.isLoading = false;
@@ -289,6 +309,9 @@ export function uesTabTable(props: any) {
     handDelete,
     headOperationAll,
     handUpper,
-    handLower
+    handLower,
+    pagination,
+    onSizeChange,
+    onCurrentChange
   };
 }

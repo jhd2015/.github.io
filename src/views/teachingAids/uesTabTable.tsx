@@ -1,11 +1,12 @@
 import Sortable from "sortablejs";
-import { ref, nextTick } from "vue";
+import { ref, nextTick, reactive } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import {
   materialDeleteApi,
   materialListApi,
   operationApi
 } from "@/api/teachingAids";
+import type { PaginationProps } from "@pureadmin/table";
 
 const options = [
   {
@@ -102,10 +103,26 @@ export function uesTabTable(props: any) {
   if (props.isStarCoin) {
     searchModel.value.starCoin = "0";
   }
+  const pagination = reactive<PaginationProps>({
+    pageSize: 20,
+    currentPage: 1,
+    pageSizes: [20, 40, 60],
+    total: 0,
+    align: "right",
+    background: true,
+    size: "default"
+  });
+  function onSizeChange() {
+    loadData();
+  }
+  function onCurrentChange() {
+    loadData();
+  }
   function loadData() {
     tableData.value.isLoading = true;
     const data = {
-      pageSize: 999999
+      pageSize: pagination.pageSize,
+      pageNum: pagination.currentPage
     };
     for (let key in searchModel.value) {
       if (searchModel.value[key]) {
@@ -113,8 +130,9 @@ export function uesTabTable(props: any) {
       }
     }
     materialListApi(data)
-      .then(list => {
-        tableData.value.list = list;
+      .then(res => {
+        tableData.value.list = res.list;
+        pagination.total = res.total;
       })
       .finally(() => {
         tableData.value.isLoading = false;
@@ -273,6 +291,9 @@ export function uesTabTable(props: any) {
     searchModel,
     headOperationAll,
     handUpper,
-    handLower
+    handLower,
+    pagination,
+    onSizeChange,
+    onCurrentChange
   };
 }

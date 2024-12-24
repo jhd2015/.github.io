@@ -168,7 +168,15 @@ class PureHttp {
         .request(config)
         .then((response: any) => {
           if (response.code == 200 || response.file) {
-            resolve(response.data || response);
+            if (typeof response.total === "number") {
+              const data = {
+                list: response.data || [],
+                total: response.total
+              };
+              resolve(data as any);
+            } else {
+              resolve(response.data || response);
+            }
           } else {
             message(response.message, { type: "error" });
           }

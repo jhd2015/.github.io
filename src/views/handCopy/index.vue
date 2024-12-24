@@ -21,7 +21,10 @@ const {
   handDelete,
   headOperationAll,
   handUpper,
-  handLower
+  handLower,
+  pagination,
+  onSizeChange,
+  onCurrentChange
 } = uesTabTable(props);
 onMounted(() => {
   loadData();
@@ -95,11 +98,15 @@ defineOptions({
       </div>
     </div>
     <pure-table
-      row-key="id"
+      row-key="_id"
       :data="tableData.list"
       :loading="tableData.isLoading"
       :columns="columns"
+      adaptive
+      :pagination="pagination"
       @selection-change="handleSelectionChange"
+      @page-size-change="onSizeChange"
+      @page-current-change="onCurrentChange"
     >
       <template #img="{ row }">
         <div v-if="row?.img" class="imgBox">

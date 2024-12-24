@@ -1,28 +1,41 @@
-import { ref } from "vue";
+import { reactive, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { materialDeleteApi } from "@/api/teachingAids";
 import { getUserList } from "@/api/user";
+import type { PaginationProps } from "@pureadmin/table";
 
 export function uesTabTable() {
   const tableData = ref({
     list: [],
     isLoading: false
   });
+  const searchModel = ref("");
+  const pagination = reactive<PaginationProps>({
+    pageSize: 20,
+    currentPage: 1,
+    pageSizes: [20, 40, 60],
+    total: 0,
+    align: "right",
+    background: true,
+    size: "default"
+  });
+  function onSizeChange() {
+    loadData();
+  }
+  function onCurrentChange() {
+    loadData();
+  }
   function loadData() {
     tableData.value.isLoading = true;
 
-    getUserList({})
-      .then(list => {
-        tableData.value.list = list.map(item => {
-          if (typeof item.img === "string") {
-            // const array = item.img
-            //   .match(/'([^']+)'/g)
-            //   .map(item => item.slice(1, -1));
-            // console.log(array);
-            item.img = item.img.split(",");
-          }
-          return item;
-        });
+    getUserList({
+      pageSize: pagination.pageSize,
+      pageNum: pagination.currentPage,
+      phoneNumber: searchModel.value
+    })
+      .then(res => {
+        tableData.value.list = res.list;
+        pagination.total = res.total;
       })
       .finally(() => {
         tableData.value.isLoading = false;
@@ -187,6 +200,10 @@ export function uesTabTable() {
     options,
     tableData,
     handDelete,
-    handleSelectionChange
+    handleSelectionChange,
+    searchModel,
+    pagination,
+    onSizeChange,
+    onCurrentChange
   };
 }

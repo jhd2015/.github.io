@@ -91,8 +91,8 @@ export const getMine = (data?: any) => {
     }
   );
 };
-export const getUserList = (data?: any) => {
-  return http.request<any>("get", "/user/list", { data });
+export const getUserList = (params?: any) => {
+  return http.request<any>("get", "/user/list", { params });
 };
 export const userAddApi = data => {
   return http.request<any>("post", "/user/add", { data });

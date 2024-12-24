@@ -114,27 +114,18 @@ async function imageDom(item: any) {
   let src: any;
   try {
     // if (item.raw.size > m1) {
-    //   // src = await getFileReader(item.raw);
     //   item.raw = await compressNnImageTo1MB(item.raw, m1);
     // }
     src = await getFileReader(item.raw);
     const file = await combineImages(src);
-    // debugger;
+
     const formData = new FormData();
-    // if (file.raw.size > m1) {
-    //   const blobData: Blob = await compressNnImageTo1MB(file.raw);
-    //   debugger;
-    //   file.raw = new File([blobData], Date.now() + ".png", {
-    //     type: "image/png",
-    //     lastModified: Date.now()
-    //   });
-    // }
     formData.append("file", file.raw);
     const ret = await handUploadApi(formData);
     ret.file = `${import.meta.env.VITE_APP_BASE_IMG}${ret.file}`;
     item.response = ret;
     item.url = ret.file;
-    item.url = file.url;
+    // item.url = file.url;
     item.status = "success";
   } catch (error) {
     console.log(error);

@@ -11,7 +11,11 @@ const {
   handDelete,
   loadData,
   options,
-  handleSelectionChange
+  searchModel,
+  handleSelectionChange,
+  pagination,
+  onSizeChange,
+  onCurrentChange
 } = uesTabTable();
 
 function getData(data) {
@@ -28,7 +32,7 @@ const onClickOutside = () => {
 onMounted(() => {
   loadData();
 });
-const searchModel = ref("");
+
 const dialogVisible = ref(false);
 const dialogDtata = ref({});
 function handEdit(data) {
@@ -46,7 +50,8 @@ function handEdit(data) {
           v-model="searchModel"
           :suffix-icon="Search"
           style="width: 240px; margin-right: 20px"
-          placeholder="请输入"
+          placeholder="请输入手机号码"
+          @keyup.enter="loadData"
         />
 
         <!-- <el-button type="primary" @click="dialogVisible = true">新增</el-button> -->
@@ -57,7 +62,11 @@ function handEdit(data) {
       :data="tableData.list"
       :loading="tableData.isLoading"
       :columns="columns"
+      adaptive
+      :pagination="pagination"
       @selection-change="handleSelectionChange"
+      @page-size-change="onSizeChange"
+      @page-current-change="onCurrentChange"
     >
       <template #state>
         <el-tag type="primary">状态</el-tag>
