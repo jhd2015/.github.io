@@ -80,7 +80,10 @@ const onLogin = async (formEl: FormInstance | undefined) => {
           .then(() => {
             message(t("login.pureLoginSuccess"), { type: "success" });
           })
-          .finally(() => (disabled.value = false));
+          .finally(() => {
+            disabled.value = false;
+            loading.value = false;
+          });
       } finally {
         loading.value = false;
       }

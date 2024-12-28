@@ -59,6 +59,17 @@ export function uesTabTable() {
       prop: "myCoin"
     },
     {
+      label: "邀请人数",
+      prop: "myInviteUser",
+      cellRenderer({ row }: any) {
+        return row?.myInviteUser?.length;
+      }
+    },
+    {
+      label: "邀请好友",
+      prop: "share"
+    },
+    {
       label: "购买数",
       prop: "likes",
       cellRenderer({ row }: any) {
