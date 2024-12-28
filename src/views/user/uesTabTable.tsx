@@ -66,7 +66,7 @@ export function uesTabTable() {
       }
     },
     {
-      label: "邀请好友",
+      label: "分享人数",
       prop: "share"
     },
     {
