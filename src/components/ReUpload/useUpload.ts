@@ -132,7 +132,7 @@ export function useUploadVertical() {
       ctx.save();
       const imgWidth = 983.05 / compress;
       const imgHeight = 695 / compress;
-      const img2X = (canvas.width - imgWidth) / 2 + 33;
+      const img2X = (canvas.width - imgWidth) / 2;
       const img2Y = (canvas.height - imgHeight) / 2 - 80;
       ctx.translate(img2X + imgWidth / 2, img2Y + imgHeight / 2);
       ctx.rotate(rotateAngle);
@@ -149,7 +149,7 @@ export function useUploadVertical() {
       ctx.save();
       const imgWidth = 795 / compress;
       const imgHeight = 1123.14 / compress;
-      const img2X = (canvas.width - imgWidth) / 2 + 33;
+      const img2X = (canvas.width - imgWidth) / 2;
       const img2Y = (canvas.height - imgHeight) / 2;
       ctx.translate(img2X + imgWidth / 2, img2Y + imgHeight / 2);
       ctx.rotate(rotateAngle);
