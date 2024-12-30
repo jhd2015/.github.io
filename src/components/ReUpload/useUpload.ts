@@ -4,7 +4,7 @@ import background2 from "@/assets/heCheng/background2.png";
 import hand from "@/assets/heCheng/hand.png";
 import hand2 from "@/assets/heCheng/hand2.png";
 
-const compressNn = 1.5;
+const compressNn = 2;
 export function useUpload() {
   async function combineImages(img1, img2): Promise<any> {
     const canvas = document.createElement("canvas");
@@ -252,51 +252,59 @@ export function watermark(watermarkImg, { ctx, canvasWidth, canvasHeight }) {
 }
 export function compressNnImageTo1MB(file, maxSize): Promise<File> {
   return new Promise(resolve => {
-    compressImage(file, maxSize, resolve);
+    imgBox(file).then(img => {
+      compressImage(img, file, maxSize, resolve);
+    });
   });
 }
-function compressImage(file, maxSize, callback) {
-  const reader = new FileReader();
-  reader.onerror = error => {
-    console.error("Error reading file:", error);
-  };
-  reader.onload = e => {
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
+function compressImage(img, file, maxSize, callback, n = 10) {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
 
-      // 设置压缩后的宽度和高度
-      let width = img.width - 100;
-      let height = img.height - 100;
+  // 设置压缩后的宽度和高度
+  let width = img.width - n;
+  let height = img.height - n;
+  console.log(width, height);
+  canvas.width = width;
+  canvas.height = height;
+  img.width = width;
+  img.height = height;
 
-      canvas.width = width;
-      canvas.height = height;
+  // 绘制压缩后的图片
+  ctx.drawImage(img, 0, 0, width, height);
 
-      // 绘制压缩后的图片
-      ctx.drawImage(img, 0, 0, width, height);
-
-      // 转换为Blob并检查大小
-      canvas.toBlob(
-        blob => {
-          if (blob.size > maxSize) {
-            console.log(blob.size, maxSize);
-            // 如果压缩后仍然超过大小限制，可以进一步降低质量
-            compressImage(blob, maxSize, callback);
-          } else {
-            // 创建一个新的File对象
-            let compressedFile = new File([blob], file.name + ".png", {
-              type: file.type,
-              lastModified: Date.now()
-            });
-            callback(compressedFile);
-          }
-        },
-        file.type,
-        0.8
-      ); // 图片质量为80%
+  // 转换为Blob并检查大小
+  canvas.toBlob(
+    blob => {
+      if (blob.size > maxSize) {
+        // 如果压缩后仍然超过大小限制，可以进一步降低质量
+        compressImage(img, file, maxSize, callback, n + 10);
+      } else {
+        // 创建一个新的File对象
+        let compressedFile = new File([blob], file.name + ".png", {
+          type: file.type,
+          lastModified: Date.now()
+        });
+        callback(compressedFile);
+      }
+    },
+    file.type,
+    1
+  ); // 图片质量为80%
+}
+function imgBox(file) {
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onerror = error => {
+      console.error("Error reading file:", error);
     };
-    img.src = e.target.result as any;
-  };
-  reader.readAsDataURL(file);
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        resolve(img);
+      };
+      img.src = e.target.result as any;
+    };
+    reader.readAsDataURL(file);
+  });
 }

@@ -110,7 +110,7 @@ async function mergeImagesVertical() {
 
 async function imageDom(item: any) {
   item.status = "uploading";
-  const m1 = 1 * 1024 * 1024;
+  const m1 = (1 * 1024 * 1024) / 2;
   let src: any;
   try {
     // if (item.raw.size > m1) {
