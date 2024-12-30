@@ -4,7 +4,7 @@ import background2 from "@/assets/heCheng/background2.png";
 import hand from "@/assets/heCheng/hand.png";
 import hand2 from "@/assets/heCheng/hand2.png";
 
-const compressNn = 2;
+const compressNn = 1.5;
 export function useUpload() {
   async function combineImages(img1, img2): Promise<any> {
     const canvas = document.createElement("canvas");
@@ -132,7 +132,7 @@ export function useUploadVertical() {
       ctx.save();
       const imgWidth = 983.05 / compress;
       const imgHeight = 695 / compress;
-      const img2X = (canvas.width - imgWidth) / 2;
+      const img2X = (canvas.width - imgWidth) / 2 + 33;
       const img2Y = (canvas.height - imgHeight) / 2 - 80;
       ctx.translate(img2X + imgWidth / 2, img2Y + imgHeight / 2);
       ctx.rotate(rotateAngle);
@@ -149,7 +149,7 @@ export function useUploadVertical() {
       ctx.save();
       const imgWidth = 795 / compress;
       const imgHeight = 1123.14 / compress;
-      const img2X = (canvas.width - imgWidth) / 2;
+      const img2X = (canvas.width - imgWidth) / 2 + 33;
       const img2Y = (canvas.height - imgHeight) / 2;
       ctx.translate(img2X + imgWidth / 2, img2Y + imgHeight / 2);
       ctx.rotate(rotateAngle);
