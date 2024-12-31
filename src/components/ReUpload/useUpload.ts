@@ -1,6 +1,6 @@
 import shuiYing from "@/assets/shuiYing.png";
 import background from "@/assets/heCheng/background.png";
-import background2 from "@/assets/heCheng/background2.png";
+import background2 from "@/assets/heCheng/background.png";
 import hand from "@/assets/heCheng/hand.png";
 import hand2 from "@/assets/heCheng/hand2.png";
 
