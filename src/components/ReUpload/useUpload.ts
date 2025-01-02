@@ -4,7 +4,7 @@ import background2 from "@/assets/heCheng/background.png";
 import hand from "@/assets/heCheng/hand.png";
 import hand2 from "@/assets/heCheng/hand2.png";
 
-const compressNn = 1.5;
+const compressNn = 1;
 export function useUpload() {
   async function combineImages(img1, img2): Promise<any> {
     const canvas = document.createElement("canvas");
@@ -140,7 +140,7 @@ export function useUploadVertical() {
       ctx.drawImage(
         img,
         -imgWidth / 2 + 12 / compress,
-        -imgHeight / 2 + 200 / compress,
+        -imgHeight / 2 + 200 - 40 / compress,
         imgWidth,
         imgHeight
       );
@@ -259,17 +259,16 @@ export function compressNnImageTo1MB(file, maxSize): Promise<File> {
 }
 function compressImage(img, file, maxSize, callback, n = 10) {
   const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
-
+  // 计算宽高比
+  const ratio = img.width / img.height;
   // 设置压缩后的宽度和高度
   let width = img.width - n;
-  let height = img.height - n;
-  console.log(width, height);
-  canvas.width = width;
-  canvas.height = height;
+  let height = width / ratio;
   img.width = width;
   img.height = height;
-
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d");
   // 绘制压缩后的图片
   ctx.drawImage(img, 0, 0, width, height);
 
